@@ -1,5 +1,7 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -10,20 +12,22 @@ import { useToast } from "@/hooks/use-toast";
 
 export function BehaviorForm() {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    siswa: "",
-    tanggal: "",
-    lokasi: "",
-    tipe: "",
-    deskripsi: "",
-    tindakan: "",
+    student_id: "",
+    date: new Date().toISOString().split('T')[0],
+    location: "",
+    behavior_type: "",
+    description: "",
+    action: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validasi form sederhana
-    if (!formData.siswa || !formData.tanggal || !formData.tipe || !formData.deskripsi) {
+    if (!formData.student_id || !formData.date || !formData.behavior_type || !formData.description) {
       toast({
         title: "Form tidak lengkap",
         description: "Mohon lengkapi semua field yang wajib diisi",
@@ -32,24 +36,54 @@ export function BehaviorForm() {
       return;
     }
     
-    // Simulasi pengiriman data
-    console.log("Form data:", formData);
-    
-    // Tampilkan toast sukses
-    toast({
-      title: "Data berhasil disimpan",
-      description: "Catatan perilaku siswa telah berhasil dicatat",
-    });
-    
-    // Reset form
-    setFormData({
-      siswa: "",
-      tanggal: "",
-      lokasi: "",
-      tipe: "",
-      deskripsi: "",
-      tindakan: "",
-    });
+    try {
+      setIsSubmitting(true);
+      
+      // Insert data to Supabase
+      const { error } = await supabase
+        .from('behavior_records')
+        .insert([
+          {
+            student_id: formData.student_id,
+            date: formData.date,
+            location: formData.location,
+            behavior_type: formData.behavior_type,
+            description: formData.description,
+            action: formData.action,
+          },
+        ]);
+        
+      if (error) throw error;
+      
+      // Tampilkan toast sukses
+      toast({
+        title: "Data berhasil disimpan",
+        description: "Catatan perilaku siswa telah berhasil dicatat",
+      });
+      
+      // Reset form
+      setFormData({
+        student_id: "",
+        date: new Date().toISOString().split('T')[0],
+        location: "",
+        behavior_type: "",
+        description: "",
+        action: "",
+      });
+      
+      // Redirect to history page
+      navigate("/behavior/history");
+      
+    } catch (error: any) {
+      console.error("Error saving behavior record:", error);
+      toast({
+        title: "Gagal menyimpan data",
+        description: error.message || "Terjadi kesalahan saat menyimpan catatan perilaku",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -76,32 +110,32 @@ export function BehaviorForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="siswa">Nama Siswa <span className="text-red-500">*</span></Label>
+              <Label htmlFor="student_id">Nama Siswa <span className="text-red-500">*</span></Label>
               <Select
-                value={formData.siswa}
-                onValueChange={(value) => handleSelectChange("siswa", value)}
+                value={formData.student_id}
+                onValueChange={(value) => handleSelectChange("student_id", value)}
                 required
               >
-                <SelectTrigger id="siswa">
+                <SelectTrigger id="student_id">
                   <SelectValue placeholder="Pilih siswa" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ahmad">Ahmad Fauzi</SelectItem>
-                  <SelectItem value="siti">Siti Nurhaliza</SelectItem>
-                  <SelectItem value="budi">Budi Santoso</SelectItem>
-                  <SelectItem value="dewi">Dewi Lestari</SelectItem>
-                  <SelectItem value="eko">Eko Prasetyo</SelectItem>
+                  <SelectItem value="Ahmad Fauzi">Ahmad Fauzi</SelectItem>
+                  <SelectItem value="Siti Nurhaliza">Siti Nurhaliza</SelectItem>
+                  <SelectItem value="Budi Santoso">Budi Santoso</SelectItem>
+                  <SelectItem value="Dewi Lestari">Dewi Lestari</SelectItem>
+                  <SelectItem value="Eko Prasetyo">Eko Prasetyo</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="tanggal">Tanggal Kejadian <span className="text-red-500">*</span></Label>
+              <Label htmlFor="date">Tanggal Kejadian <span className="text-red-500">*</span></Label>
               <Input
                 type="date"
-                id="tanggal"
-                name="tanggal"
-                value={formData.tanggal}
+                id="date"
+                name="date"
+                value={formData.date}
                 onChange={handleChange}
                 required
               />
@@ -110,25 +144,25 @@ export function BehaviorForm() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="lokasi">Lokasi</Label>
+              <Label htmlFor="location">Lokasi</Label>
               <Input
                 type="text"
-                id="lokasi"
-                name="lokasi"
+                id="location"
+                name="location"
                 placeholder="Contoh: Kelas, Kantin, dll"
-                value={formData.lokasi}
+                value={formData.location}
                 onChange={handleChange}
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="tipe">Tipe Perilaku <span className="text-red-500">*</span></Label>
+              <Label htmlFor="behavior_type">Tipe Perilaku <span className="text-red-500">*</span></Label>
               <Select
-                value={formData.tipe}
-                onValueChange={(value) => handleSelectChange("tipe", value)}
+                value={formData.behavior_type}
+                onValueChange={(value) => handleSelectChange("behavior_type", value)}
                 required
               >
-                <SelectTrigger id="tipe">
+                <SelectTrigger id="behavior_type">
                   <SelectValue placeholder="Pilih tipe perilaku" />
                 </SelectTrigger>
                 <SelectContent>
@@ -141,12 +175,12 @@ export function BehaviorForm() {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="deskripsi">Deskripsi Perilaku <span className="text-red-500">*</span></Label>
+            <Label htmlFor="description">Deskripsi Perilaku <span className="text-red-500">*</span></Label>
             <Textarea
-              id="deskripsi"
-              name="deskripsi"
+              id="description"
+              name="description"
               placeholder="Jelaskan perilaku siswa yang diamati..."
-              value={formData.deskripsi}
+              value={formData.description}
               onChange={handleChange}
               rows={4}
               required
@@ -154,23 +188,31 @@ export function BehaviorForm() {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="tindakan">Tindakan yang Diambil</Label>
+            <Label htmlFor="action">Tindakan yang Diambil</Label>
             <Textarea
-              id="tindakan"
-              name="tindakan"
+              id="action"
+              name="action"
               placeholder="Jelaskan tindakan yang diambil (jika ada)..."
-              value={formData.tindakan}
+              value={formData.action}
               onChange={handleChange}
               rows={3}
             />
           </div>
           
           <div className="flex justify-end space-x-2">
-            <Button type="button" variant="outline">
-              Batal
+            <Button 
+              type="button" 
+              variant="outline"
+              onClick={() => navigate("/behavior/history")}
+            >
+              Lihat Riwayat
             </Button>
-            <Button type="submit" className="bg-counseling-blue hover:bg-blue-600">
-              Simpan Data
+            <Button 
+              type="submit" 
+              className="bg-counseling-blue hover:bg-blue-600"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Menyimpan...' : 'Simpan Data'}
             </Button>
           </div>
         </form>

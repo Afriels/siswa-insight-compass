@@ -9,7 +9,131 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      behavior_records: {
+        Row: {
+          action: string | null
+          behavior_type: string
+          created_at: string
+          date: string
+          description: string
+          id: string
+          location: string | null
+          recorder_id: string | null
+          student_id: string
+        }
+        Insert: {
+          action?: string | null
+          behavior_type: string
+          created_at?: string
+          date: string
+          description: string
+          id?: string
+          location?: string | null
+          recorder_id?: string | null
+          student_id: string
+        }
+        Update: {
+          action?: string | null
+          behavior_type?: string
+          created_at?: string
+          date?: string
+          description?: string
+          id?: string
+          location?: string | null
+          recorder_id?: string | null
+          student_id?: string
+        }
+        Relationships: []
+      }
+      consultation_messages: {
+        Row: {
+          consultation_id: string | null
+          created_at: string
+          id: string
+          message: string
+          sender_id: string | null
+        }
+        Insert: {
+          consultation_id?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          sender_id?: string | null
+        }
+        Update: {
+          consultation_id?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          sender_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultation_messages_consultation_id_fkey"
+            columns: ["consultation_id"]
+            isOneToOne: false
+            referencedRelation: "consultations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      consultations: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          status: string | null
+          student_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          status?: string | null
+          student_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          status?: string | null
+          student_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          role: string | null
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          role?: string | null
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          role?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
