@@ -52,7 +52,13 @@ export function ConsultationList() {
       
       if (error) throw error;
       
-      setConsultations(data || []);
+      // Convert status to the expected type
+      const typedData = data?.map(item => ({
+        ...item,
+        status: item.status as 'pending' | 'ongoing' | 'resolved'
+      })) || [];
+      
+      setConsultations(typedData);
     } catch (error: any) {
       console.error("Error fetching consultations:", error);
       toast({

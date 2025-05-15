@@ -87,8 +87,30 @@ export function ConsultationDetail() {
           
         if (messagesError) throw messagesError;
         
-        setConsultation(consultationData);
-        setMessages(messagesData || []);
+        // Cast status to the correct type and set consultation
+        const typedConsultation = {
+          ...consultationData,
+          status: consultationData.status as 'pending' | 'ongoing' | 'resolved'
+        };
+        
+        setConsultation(typedConsultation);
+        
+        // Handle potentially missing properties in messagesData
+        const processedMessages = messagesData?.map(msg => {
+          // If sender is an error object or missing properties, provide default values
+          if (!msg.sender || typeof msg.sender === 'string' || 'error' in msg.sender) {
+            return {
+              ...msg,
+              sender: {
+                full_name: 'Unknown',
+                role: 'unknown'
+              }
+            };
+          }
+          return msg;
+        }) || [];
+        
+        setMessages(processedMessages);
         
         // If status is pending and user is counselor, update to ongoing
         if (consultationData.status === 'pending' && (profileData?.role === 'counselor' || profileData?.role === 'admin')) {
@@ -97,8 +119,8 @@ export function ConsultationDetail() {
             .update({ status: 'ongoing' })
             .eq('id', id);
             
-          consultationData.status = 'ongoing';
-          setConsultation(consultationData);
+          typedConsultation.status = 'ongoing';
+          setConsultation(typedConsultation);
         }
         
       } catch (error: any) {
@@ -168,7 +190,21 @@ export function ConsultationDetail() {
         .eq('consultation_id', id)
         .order('created_at', { ascending: true });
         
-      setMessages(messagesData || []);
+      // Process messages to ensure they match the expected type
+      const processedMessages = messagesData?.map(msg => {
+        if (!msg.sender || typeof msg.sender === 'string' || 'error' in msg.sender) {
+          return {
+            ...msg,
+            sender: {
+              full_name: 'Unknown',
+              role: 'unknown'
+            }
+          };
+        }
+        return msg;
+      }) || [];
+      
+      setMessages(processedMessages);
       
     } catch (error: any) {
       console.error("Error sending message:", error);
