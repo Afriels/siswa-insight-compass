@@ -1,13 +1,53 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { Layout } from "@/components/Layout";
+import { StatCard } from "@/components/Dashboard/StatCard";
+import { IssueChart } from "@/components/Dashboard/IssueChart";
+import { RecentActivities } from "@/components/Dashboard/RecentActivities";
+import { Users, User, FileText, AlertCircle } from "lucide-react";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <Layout>
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold">Dashboard BK Connect</h1>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            title="Total Siswa"
+            value="350"
+            description="Dari 15 kelas"
+            icon={<Users size={18} />}
+            colorClass="bg-counseling-blue text-white"
+          />
+          <StatCard
+            title="Siswa Terkonseling"
+            value="124"
+            description="35.4% dari total siswa"
+            icon={<User size={18} />}
+            colorClass="bg-counseling-green text-white"
+          />
+          <StatCard
+            title="Sesi Konseling"
+            value="289"
+            description="Bulan ini: 42"
+            icon={<FileText size={18} />}
+            colorClass="bg-counseling-purple text-white"
+          />
+          <StatCard
+            title="Masalah Aktif"
+            value="56"
+            description="Perlu tindak lanjut"
+            icon={<AlertCircle size={18} />}
+            colorClass="bg-red-500 text-white"
+          />
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <IssueChart />
+          <RecentActivities />
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 
