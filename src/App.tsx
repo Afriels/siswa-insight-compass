@@ -20,6 +20,7 @@ import Consultation from "./pages/Consultation";
 import ConsultationNew from "./pages/ConsultationNew";
 import ConsultationDetailPage from "./pages/ConsultationDetail";
 import Admin from "./pages/Admin";
+import Schedule from "./pages/Schedule";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -59,6 +60,7 @@ const App = () => (
               <Route path="/consultation" element={<ProtectedRoute><Consultation /></ProtectedRoute>} />
               <Route path="/consultation/new" element={<ProtectedRoute><ConsultationNew /></ProtectedRoute>} />
               <Route path="/consultation/:id" element={<ProtectedRoute><ConsultationDetailPage /></ProtectedRoute>} />
+              <Route path="/schedule" element={<ProtectedRoute><Schedule /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
               
               {/* Catch-all route */}
