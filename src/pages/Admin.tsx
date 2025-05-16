@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import Layout from "@/components/Layout";
+import { Layout } from "@/components/Layout";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import UserManagement from "@/components/Admin/UserManagement";
@@ -10,7 +10,7 @@ import ConsultationManagement from "@/components/Admin/ConsultationManagement";
 import LetterManagement from "@/components/Admin/LetterManagement";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/providers/AuthProvider";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 const Admin = () => {
   const { toast } = useToast();

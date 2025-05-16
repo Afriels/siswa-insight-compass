@@ -3,7 +3,7 @@ import { AuthForm } from "@/components/Auth/AuthForm";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 const Auth = () => {
   const navigate = useNavigate();

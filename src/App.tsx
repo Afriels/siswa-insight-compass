@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { ProtectedRoute } from "@/components/Auth/ProtectedRoute";
-import { Helmet } from "react-helmet";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 
 import Index from "./pages/Index";
 import Students from "./pages/Students";
@@ -38,32 +38,34 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AuthProvider>
-        <BrowserRouter>
-          <Helmet>
-            <title>BK Connect - Aplikasi Bimbingan Konseling Digital</title>
-            <link rel="icon" href="https://sman1lumbang.sch.id/wp-content/uploads/2022/12/logo-smanilum-60mm.png" type="image/png" />
-          </Helmet>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/login" element={<Auth />} />
-            
-            {/* Protected Routes */}
-            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-            <Route path="/students" element={<ProtectedRoute><Students /></ProtectedRoute>} />
-            <Route path="/sociogram" element={<ProtectedRoute><Sociogram /></ProtectedRoute>} />
-            <Route path="/issues" element={<ProtectedRoute><Issues /></ProtectedRoute>} />
-            <Route path="/behavior" element={<ProtectedRoute><Behavior /></ProtectedRoute>} />
-            <Route path="/behavior/history" element={<ProtectedRoute><BehaviorHistoryPage /></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-            <Route path="/consultation" element={<ProtectedRoute><Consultation /></ProtectedRoute>} />
-            <Route path="/consultation/new" element={<ProtectedRoute><ConsultationNew /></ProtectedRoute>} />
-            <Route path="/consultation/:id" element={<ProtectedRoute><ConsultationDetailPage /></ProtectedRoute>} />
-            <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
-            
-            {/* Catch-all route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <HelmetProvider>
+          <BrowserRouter>
+            <Helmet>
+              <title>BK Connect - Aplikasi Bimbingan Konseling Digital</title>
+              <link rel="icon" href="https://sman1lumbang.sch.id/wp-content/uploads/2022/12/logo-smanilum-60mm.png" type="image/png" />
+            </Helmet>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/login" element={<Auth />} />
+              
+              {/* Protected Routes */}
+              <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+              <Route path="/students" element={<ProtectedRoute><Students /></ProtectedRoute>} />
+              <Route path="/sociogram" element={<ProtectedRoute><Sociogram /></ProtectedRoute>} />
+              <Route path="/issues" element={<ProtectedRoute><Issues /></ProtectedRoute>} />
+              <Route path="/behavior" element={<ProtectedRoute><Behavior /></ProtectedRoute>} />
+              <Route path="/behavior/history" element={<ProtectedRoute><BehaviorHistoryPage /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="/consultation" element={<ProtectedRoute><Consultation /></ProtectedRoute>} />
+              <Route path="/consultation/new" element={<ProtectedRoute><ConsultationNew /></ProtectedRoute>} />
+              <Route path="/consultation/:id" element={<ProtectedRoute><ConsultationDetailPage /></ProtectedRoute>} />
+              <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+              
+              {/* Catch-all route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </HelmetProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
