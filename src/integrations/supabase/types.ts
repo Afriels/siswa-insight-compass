@@ -122,6 +122,42 @@ export type Database = {
           },
         ]
       }
+      counseling_schedules: {
+        Row: {
+          counselor_id: string | null
+          created_at: string
+          description: string
+          id: string
+          location: string
+          scheduled_at: string
+          status: string
+          student_id: string | null
+          title: string
+        }
+        Insert: {
+          counselor_id?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          location: string
+          scheduled_at: string
+          status?: string
+          student_id?: string | null
+          title: string
+        }
+        Update: {
+          counselor_id?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          location?: string
+          scheduled_at?: string
+          status?: string
+          student_id?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

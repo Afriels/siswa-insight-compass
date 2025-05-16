@@ -64,7 +64,13 @@ export function ScheduleList({ selectedDate }: ScheduleListProps) {
         .lt('scheduled_at', `${dateString}T23:59:59`);
 
       if (error) throw error;
-      setSchedules(data || []);
+      
+      // Type assertion to ensure compatibility
+      const validSchedules = (data || []).filter(item => 
+        !item.student || (item.student && !('error' in item.student))
+      ) as unknown as CounselingSchedule[];
+      
+      setSchedules(validSchedules);
     } catch (error: any) {
       toast({
         title: "Error loading schedules",

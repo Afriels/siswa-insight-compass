@@ -11,20 +11,7 @@ import {
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle } from "lucide-react";
-
-type BehaviorRecord = {
-  id: string;
-  behavior_type: string;
-  description: string;
-  date: string;
-  created_at: string;
-  student_id: string;
-  location: string | null;
-  action: string | null;
-  profiles: {
-    full_name: string;
-  } | null;
-};
+import { BehaviorRecord } from "@/types/behavior-records";
 
 const BehaviorManagement = () => {
   const { toast } = useToast();
@@ -42,7 +29,12 @@ const BehaviorManagement = () => {
         
       if (error) throw error;
       
-      setRecords(data || []);
+      // Filter out any records with invalid profiles before setting state
+      const validRecords = data?.filter(record => 
+        !record.profiles || (record.profiles && !('error' in record.profiles))
+      ) as BehaviorRecord[];
+      
+      setRecords(validRecords || []);
     } catch (error: any) {
       console.error("Error fetching behavior records:", error);
       toast({
