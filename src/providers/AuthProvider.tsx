@@ -1,5 +1,5 @@
 
-import { createContext, useState, useEffect, useContext, ReactNode } from "react";
+import { createContext, useState, useEffect, useContext, ReactNode, useCallback } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -8,7 +8,10 @@ type AuthContextType = {
   user: User | null;
   loading: boolean;
   signOut: () => Promise<void>;
+  resetInactivityTimer: () => void;
 };
+
+const AUTH_TIMEOUT = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -16,6 +19,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [inactivityTimer, setInactivityTimer] = useState<NodeJS.Timeout | null>(null);
+
+  const resetInactivityTimer = useCallback(() => {
+    // Clear existing timer
+    if (inactivityTimer) clearTimeout(inactivityTimer);
+    
+    // Only set new timer if user is logged in
+    if (user) {
+      const timer = setTimeout(async () => {
+        console.log("User inactive for 5 minutes, logging out");
+        await signOut();
+      }, AUTH_TIMEOUT);
+      
+      setInactivityTimer(timer);
+    }
+  }, [inactivityTimer, user]);
+
+  const signOut = async () => {
+    if (inactivityTimer) clearTimeout(inactivityTimer);
+    await supabase.auth.signOut();
+  };
+
+  useEffect(() => {
+    // Set up event listeners for user activity
+    const activityEvents = ['mousedown', 'keypress', 'scroll', 'touchstart'];
+    
+    const handleUserActivity = () => {
+      resetInactivityTimer();
+    };
+    
+    // Add event listeners
+    activityEvents.forEach(event => {
+      document.addEventListener(event, handleUserActivity);
+    });
+
+    // Clear event listeners on cleanup
+    return () => {
+      activityEvents.forEach(event => {
+        document.removeEventListener(event, handleUserActivity);
+      });
+      if (inactivityTimer) clearTimeout(inactivityTimer);
+    };
+  }, [resetInactivityTimer, inactivityTimer]);
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -24,6 +70,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        if (session?.user) {
+          resetInactivityTimer();
+        } else if (inactivityTimer) {
+          clearTimeout(inactivityTimer);
+        }
       }
     );
 
@@ -32,20 +84,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      
+      if (session?.user) {
+        resetInactivityTimer();
+      }
     });
 
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const signOut = async () => {
-    await supabase.auth.signOut();
-  };
+    return () => {
+      subscription.unsubscribe();
+      if (inactivityTimer) clearTimeout(inactivityTimer);
+    };
+  }, [resetInactivityTimer, inactivityTimer]);
 
   const value = {
     session,
     user,
     loading,
     signOut,
+    resetInactivityTimer,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

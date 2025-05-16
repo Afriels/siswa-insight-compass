@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
 export function AuthForm() {
@@ -25,7 +24,6 @@ export function AuthForm() {
     password: "",
     confirmPassword: "",
     fullName: "",
-    role: "student",
   });
   
   const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,13 +39,6 @@ export function AuthForm() {
     setSignupForm(prev => ({
       ...prev,
       [name]: value
-    }));
-  };
-  
-  const handleRoleChange = (role: string) => {
-    setSignupForm(prev => ({
-      ...prev,
-      role
     }));
   };
   
@@ -125,13 +116,34 @@ export function AuthForm() {
     try {
       setIsSubmitting(true);
       
+      // Check if email or fullName already exists
+      const { data: existingProfiles, error: checkError } = await supabase
+        .from('profiles')
+        .select('username, full_name')
+        .or(`username.eq.${signupForm.email},full_name.eq.${signupForm.fullName}`);
+
+      if (checkError) throw checkError;
+      
+      if (existingProfiles && existingProfiles.length > 0) {
+        const duplicateEmail = existingProfiles.some(profile => profile.username === signupForm.email);
+        const duplicateName = existingProfiles.some(profile => profile.full_name === signupForm.fullName);
+        
+        if (duplicateEmail) {
+          throw new Error("Email sudah terdaftar. Gunakan email lain.");
+        }
+        
+        if (duplicateName) {
+          throw new Error("Nama sudah terdaftar. Gunakan nama lain.");
+        }
+      }
+      
       const { error } = await supabase.auth.signUp({
         email: signupForm.email,
         password: signupForm.password,
         options: {
           data: {
             full_name: signupForm.fullName,
-            role: signupForm.role,
+            // Role is now set by default in the database
           }
         }
       });
@@ -149,7 +161,6 @@ export function AuthForm() {
         password: "",
         confirmPassword: "",
         fullName: "",
-        role: "student",
       });
       
     } catch (error: any) {
@@ -166,7 +177,12 @@ export function AuthForm() {
   
   return (
     <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
+      <CardHeader className="text-center">
+        <div className="flex justify-center mb-4">
+          <img src="https://sman1lumbang.sch.id/wp-content/uploads/2022/12/logo-smanilum-60mm.png" 
+               alt="Logo SMAN 1 Lumbang" 
+               className="h-20 w-auto" />
+        </div>
         <CardTitle className="text-center text-counseling-blue text-2xl">BK Connect</CardTitle>
         <CardDescription className="text-center">
           Aplikasi Bimbingan Konseling Digital
@@ -242,22 +258,6 @@ export function AuthForm() {
                   onChange={handleSignupChange}
                   required
                 />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="role">Peran</Label>
-                <Select
-                  value={signupForm.role}
-                  onValueChange={handleRoleChange}
-                >
-                  <SelectTrigger id="role">
-                    <SelectValue placeholder="Pilih peran Anda" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="student">Siswa</SelectItem>
-                    <SelectItem value="counselor">Guru BK</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
               
               <div className="space-y-2">

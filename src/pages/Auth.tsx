@@ -3,6 +3,7 @@ import { AuthForm } from "@/components/Auth/AuthForm";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Helmet } from "react-helmet";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -20,9 +21,15 @@ const Auth = () => {
   }, [navigate]);
   
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-4">
-      <AuthForm />
-    </div>
+    <>
+      <Helmet>
+        <title>Login - BK Connect</title>
+        <link rel="icon" href="https://sman1lumbang.sch.id/wp-content/uploads/2022/12/logo-smanilum-60mm.png" type="image/png" />
+      </Helmet>
+      <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-4">
+        <AuthForm />
+      </div>
+    </>
   );
 };
 
