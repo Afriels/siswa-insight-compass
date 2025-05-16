@@ -11,5 +11,5 @@ export interface BehaviorRecord {
   created_at: string;
   profiles?: {
     full_name: string;
-  };
+  } | null;
 }
