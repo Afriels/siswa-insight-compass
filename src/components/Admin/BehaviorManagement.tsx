@@ -22,19 +22,40 @@ const BehaviorManagement = () => {
     try {
       setLoading(true);
       
-      const { data, error } = await supabase
+      // First get behavior records
+      const { data: behaviorData, error: behaviorError } = await supabase
         .from('behavior_records')
-        .select('*, profiles:student_id(full_name)')
+        .select('*')
         .order('date', { ascending: false });
         
-      if (error) throw error;
+      if (behaviorError) throw behaviorError;
       
-      // Filter out any records with invalid profiles before setting state
-      const validRecords = data?.filter(record => 
-        !record.profiles || (record.profiles && !('error' in record.profiles))
-      ) as BehaviorRecord[];
+      if (!behaviorData || behaviorData.length === 0) {
+        setRecords([]);
+        return;
+      }
       
-      setRecords(validRecords || []);
+      // Get unique student IDs from behavior records
+      const studentIds = [...new Set(behaviorData.map(record => record.student_id))];
+      
+      // Fetch profiles for these student IDs
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .in('id', studentIds);
+        
+      if (profilesError) {
+        console.error("Error fetching profiles:", profilesError);
+        // Continue without profiles data
+      }
+      
+      // Map behavior records with profiles
+      const recordsWithProfiles = behaviorData.map(record => ({
+        ...record,
+        profiles: profilesData?.find(profile => profile.id === record.student_id) || null
+      }));
+      
+      setRecords(recordsWithProfiles);
     } catch (error: any) {
       console.error("Error fetching behavior records:", error);
       toast({
