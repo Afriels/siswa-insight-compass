@@ -21,6 +21,9 @@ import ConsultationNew from "./pages/ConsultationNew";
 import ConsultationDetailPage from "./pages/ConsultationDetail";
 import Admin from "./pages/Admin";
 import Schedule from "./pages/Schedule";
+import Forum from "./pages/Forum";
+import PsychologyTestPage from "./pages/PsychologyTest";
+import ForumLanding from "./pages/ForumLanding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -46,10 +49,11 @@ const App = () => (
           </Helmet>
           <Routes>
             {/* Public Routes */}
+            <Route path="/" element={<ForumLanding />} />
             <Route path="/login" element={<Auth />} />
             
             {/* Protected Routes */}
-            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+            <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/students" element={<ProtectedRoute><Students /></ProtectedRoute>} />
             <Route path="/sociogram" element={<ProtectedRoute><Sociogram /></ProtectedRoute>} />
             <Route path="/issues" element={<ProtectedRoute><Issues /></ProtectedRoute>} />
@@ -60,6 +64,8 @@ const App = () => (
             <Route path="/consultation/new" element={<ProtectedRoute><ConsultationNew /></ProtectedRoute>} />
             <Route path="/consultation/:id" element={<ProtectedRoute><ConsultationDetailPage /></ProtectedRoute>} />
             <Route path="/schedule" element={<ProtectedRoute><Schedule /></ProtectedRoute>} />
+            <Route path="/forum" element={<ProtectedRoute><Forum /></ProtectedRoute>} />
+            <Route path="/psychology-test" element={<ProtectedRoute><PsychologyTestPage /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
             
             {/* Catch-all route */}
