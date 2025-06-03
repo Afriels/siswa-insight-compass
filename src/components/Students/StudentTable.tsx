@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, UserPlus, PenLine, Trash2, Download, Upload } from "lucide-react";
+import { Search, UserPlus, PenLine, Trash2, Download, Upload, Key } from "lucide-react";
 import { StudentForm, StudentFormData } from "./StudentForm";
 import { StudentTemplateDownload } from "./StudentTemplateDownload";
 import * as XLSX from 'xlsx';
@@ -34,9 +35,12 @@ export function StudentTable() {
   const [loading, setLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<StudentFormData | null>(null);
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
   const [studentToDelete, setStudentToDelete] = useState<string | null>(null);
+  const [studentForPassword, setStudentForPassword] = useState<Student | null>(null);
+  const [newPassword, setNewPassword] = useState("");
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
   
@@ -67,7 +71,6 @@ export function StudentTable() {
   
   useEffect(() => {
     fetchStudents();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
   // Filter students based on search term
@@ -128,6 +131,41 @@ export function StudentTable() {
       setStudentToDelete(null);
     }
   };
+
+  const handleResetPassword = (student: Student) => {
+    setStudentForPassword(student);
+    setNewPassword("");
+    setIsPasswordDialogOpen(true);
+  };
+
+  const handleUpdatePassword = async () => {
+    if (!studentForPassword || !newPassword) return;
+    
+    try {
+      const { error } = await supabase.auth.admin.updateUserById(
+        studentForPassword.id,
+        { password: newPassword }
+      );
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Berhasil",
+        description: `Password siswa ${studentForPassword.full_name} berhasil diperbarui`,
+      });
+      
+      setIsPasswordDialogOpen(false);
+      setStudentForPassword(null);
+      setNewPassword("");
+    } catch (error: any) {
+      console.error("Error updating password:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Gagal memperbarui password",
+        variant: "destructive",
+      });
+    }
+  };
   
   const handleExportToExcel = () => {
     try {
@@ -140,7 +178,8 @@ export function StudentTable() {
         Kelas: student.user_metadata?.class || '',
         Gender: student.user_metadata?.gender || '',
         'Skor Sosial': student.user_metadata?.social_score || '',
-        Email: student.username || ''
+        Email: student.username || '',
+        'Tanggal Dibuat': new Date(student.created_at).toLocaleDateString('id-ID')
       }));
       
       // Create workbook and worksheet
@@ -154,7 +193,8 @@ export function StudentTable() {
         { wch: 15 }, // Kelas
         { wch: 15 }, // Gender
         { wch: 15 }, // Skor Sosial
-        { wch: 30 }  // Email
+        { wch: 30 }, // Email
+        { wch: 15 }  // Tanggal Dibuat
       ];
       
       // Add worksheet to workbook
@@ -263,7 +303,7 @@ export function StudentTable() {
               
               // Generate email if not provided
               const email = record.Email || `${record.NIS}@student.sekolah.sch.id`;
-              const password = `siswa${record.NIS}`; // Generate password based on NIS
+              const password = record.Password || `siswa${record.NIS}`; // Use provided password or generate based on NIS
               
               // Create auth user
               const { error } = await supabase.auth.admin.createUser({
@@ -357,7 +397,7 @@ export function StudentTable() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-        <h2 className="text-xl font-semibold">Data Siswa</h2>
+        <h2 className="text-xl font-semibold">Manajemen User Siswa</h2>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <div className="relative w-full sm:w-64">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
@@ -401,14 +441,13 @@ export function StudentTable() {
       
       {/* Info Box untuk Template */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h3 className="text-sm font-medium text-blue-800 mb-2">Panduan Import Data Siswa:</h3>
+        <h3 className="text-sm font-medium text-blue-800 mb-2">Panduan Manajemen User Siswa:</h3>
         <ul className="text-xs text-blue-700 space-y-1">
           <li>• Unduh template Excel terlebih dahulu menggunakan tombol "Download Template"</li>
-          <li>• Isi data sesuai format yang telah disediakan</li>
-          <li>• NIS, Nama Lengkap, dan Kelas wajib diisi</li>
-          <li>• Gender: "Laki-laki" atau "Perempuan"</li>
-          <li>• Skor Sosial: "Tinggi", "Sedang", atau "Rendah"</li>
-          <li>• Email opsional, jika kosong akan dibuat otomatis</li>
+          <li>• Setiap siswa akan otomatis mendapat akun login dengan email dan password</li>
+          <li>• Password default: "siswa" + NIS (contoh: siswa12345678)</li>
+          <li>• Admin dapat mengubah password siswa melalui tombol "Reset Password"</li>
+          <li>• Email opsional, jika kosong akan dibuat otomatis berformat: NIS@student.sekolah.sch.id</li>
         </ul>
       </div>
       
@@ -422,7 +461,7 @@ export function StudentTable() {
                 <TableHead>Kelas</TableHead>
                 <TableHead>Gender</TableHead>
                 <TableHead>Skor Sosial</TableHead>
-                <TableHead>Email</TableHead>
+                <TableHead>Email Login</TableHead>
                 <TableHead className="text-right">Aksi</TableHead>
               </TableRow>
             </TableHeader>
@@ -452,9 +491,16 @@ export function StudentTable() {
                     <TableCell>{student.username || '-'}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleResetPassword(student)}
+                          title="Reset Password"
+                        >
+                          <Key className="h-4 w-4" />
+                        </Button>
                         <Button variant="outline" size="sm" onClick={() => handleEditStudent(student)}>
                           <PenLine className="h-4 w-4" />
-                          <span className="sr-only">Edit</span>
                         </Button>
                         <Button 
                           variant="destructive" 
@@ -462,7 +508,6 @@ export function StudentTable() {
                           onClick={() => handleDeleteConfirm(student.id)}
                         >
                           <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">Delete</span>
                         </Button>
                       </div>
                     </TableCell>
@@ -483,13 +528,45 @@ export function StudentTable() {
         mode={formMode}
       />
       
+      {/* Password Reset Dialog */}
+      <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reset Password Siswa</DialogTitle>
+            <DialogDescription>
+              Reset password untuk siswa: {studentForPassword?.full_name}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <label htmlFor="newPassword" className="block text-sm font-medium mb-2">
+              Password Baru
+            </label>
+            <Input
+              id="newPassword"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Masukkan password baru"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsPasswordDialogOpen(false)}>
+              Batal
+            </Button>
+            <Button onClick={handleUpdatePassword} disabled={!newPassword}>
+              Update Password
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Konfirmasi Hapus</DialogTitle>
             <DialogDescription>
-              Apakah Anda yakin ingin menghapus data siswa ini? Tindakan ini tidak dapat dibatalkan.
+              Apakah Anda yakin ingin menghapus akun siswa ini? Tindakan ini tidak dapat dibatalkan dan akan menghapus semua data login siswa.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

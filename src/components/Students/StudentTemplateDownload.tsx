@@ -17,7 +17,8 @@ export const StudentTemplateDownload = () => {
           Kelas: "X-A",
           Gender: "Laki-laki",
           "Skor Sosial": "Sedang",
-          Email: "siswa@example.com"
+          Email: "siswa@example.com",
+          Password: "siswa12345678"
         },
         {
           NIS: "",
@@ -25,7 +26,8 @@ export const StudentTemplateDownload = () => {
           Kelas: "",
           Gender: "",
           "Skor Sosial": "",
-          Email: ""
+          Email: "",
+          Password: ""
         }
       ];
 
@@ -60,6 +62,11 @@ export const StudentTemplateDownload = () => {
           Kolom: "Email",
           Keterangan: "Email untuk login (opsional, jika kosong akan dibuat otomatis)",
           "Contoh": "siswa@sekolah.sch.id"
+        },
+        {
+          Kolom: "Password",
+          Keterangan: "Password untuk login (opsional, jika kosong akan dibuat otomatis: siswa+NIS)",
+          "Contoh": "siswa12345678"
         }
       ];
 
@@ -76,7 +83,8 @@ export const StudentTemplateDownload = () => {
         { wch: 15 }, // Kelas
         { wch: 15 }, // Gender
         { wch: 15 }, // Skor Sosial
-        { wch: 30 }  // Email
+        { wch: 30 }, // Email
+        { wch: 20 }  // Password
       ];
       
       // Create instructions worksheet
@@ -94,11 +102,11 @@ export const StudentTemplateDownload = () => {
       XLSX.utils.book_append_sheet(workbook, instructionsWS, "Petunjuk Pengisian");
       
       // Generate and download file
-      XLSX.writeFile(workbook, "template-data-siswa.xlsx");
+      XLSX.writeFile(workbook, "template-user-siswa.xlsx");
       
       toast({
         title: "Template berhasil diunduh",
-        description: "File template telah berhasil diunduh ke komputer Anda",
+        description: "File template user siswa telah berhasil diunduh ke komputer Anda",
       });
     } catch (error) {
       console.error("Error downloading template:", error);

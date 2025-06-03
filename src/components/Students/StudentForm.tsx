@@ -22,6 +22,7 @@ export interface StudentFormData {
   gender: 'Laki-laki' | 'Perempuan';
   social_score?: 'Tinggi' | 'Sedang' | 'Rendah';
   email?: string;
+  password?: string;
 }
 
 interface StudentFormProps {
@@ -42,7 +43,8 @@ export const StudentForm = ({ isOpen, onClose, onSuccess, initialData, mode }: S
       class: "",
       gender: "Laki-laki",
       social_score: "Sedang",
-      email: ""
+      email: "",
+      password: ""
     }
   );
 
@@ -64,26 +66,19 @@ export const StudentForm = ({ isOpen, onClose, onSuccess, initialData, mode }: S
         return;
       }
       
-      const userData = {
-        username: formData.email || `${formData.nis}@student.example.com`,
-        full_name: formData.full_name,
-        role: "student",
-      };
-      
-      let result;
-      
       if (mode === 'create') {
-        // Create random password for new student account
-        const password = Math.random().toString(36).slice(-8);
+        // Generate email and password if not provided
+        const email = formData.email || `${formData.nis}@student.sekolah.sch.id`;
+        const password = formData.password || `siswa${formData.nis}`;
         
         // Create auth user first
         const { error: authError, data: authData } = await supabase.auth.admin.createUser({
-          email: userData.username,
+          email: email,
           password: password,
           email_confirm: true,
           user_metadata: {
-            full_name: userData.full_name,
-            role: userData.role,
+            full_name: formData.full_name,
+            role: "student",
             nis: formData.nis,
             class: formData.class,
             gender: formData.gender,
@@ -93,12 +88,10 @@ export const StudentForm = ({ isOpen, onClose, onSuccess, initialData, mode }: S
         
         if (authError) throw authError;
         
-        result = { data: authData.user, error: null };
-        
         toast({
           title: "Siswa berhasil ditambahkan",
-          description: `Akun siswa dibuat dengan password: ${password}`,
-          duration: 5000,
+          description: `Akun siswa dibuat dengan email: ${email} dan password: ${password}`,
+          duration: 8000,
         });
       } else {
         // Update existing user profile
@@ -119,15 +112,11 @@ export const StudentForm = ({ isOpen, onClose, onSuccess, initialData, mode }: S
           
         if (error) throw error;
         
-        result = { data: { id: formData.id }, error: null };
-        
         toast({
           title: "Data siswa berhasil diperbarui",
           duration: 3000,
         });
       }
-      
-      if (result.error) throw result.error;
       
       onSuccess();
       onClose();
@@ -148,10 +137,10 @@ export const StudentForm = ({ isOpen, onClose, onSuccess, initialData, mode }: S
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{mode === 'create' ? 'Tambah Siswa Baru' : 'Edit Data Siswa'}</DialogTitle>
+          <DialogTitle>{mode === 'create' ? 'Tambah User Siswa Baru' : 'Edit Data Siswa'}</DialogTitle>
           <DialogDescription>
             {mode === 'create' 
-              ? 'Masukkan data siswa baru di bawah ini.'
+              ? 'Masukkan data siswa baru. Akun login akan dibuat otomatis.'
               : 'Perbarui data siswa yang sudah ada.'}
           </DialogDescription>
         </DialogHeader>
@@ -223,17 +212,33 @@ export const StudentForm = ({ isOpen, onClose, onSuccess, initialData, mode }: S
             </Select>
           </div>
           
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="email" className="text-right">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => handleChange('email', e.target.value)}
-              placeholder="Opsional - untuk login"
-              className="col-span-3"
-            />
-          </div>
+          {mode === 'create' && (
+            <>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="email" className="text-right">Email Login</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleChange('email', e.target.value)}
+                  placeholder="Opsional - akan dibuat otomatis jika kosong"
+                  className="col-span-3"
+                />
+              </div>
+              
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="password" className="text-right">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => handleChange('password', e.target.value)}
+                  placeholder="Opsional - default: siswa+NIS"
+                  className="col-span-3"
+                />
+              </div>
+            </>
+          )}
         </div>
         
         <DialogFooter>
@@ -242,7 +247,7 @@ export const StudentForm = ({ isOpen, onClose, onSuccess, initialData, mode }: S
           </Button>
           <Button onClick={handleSubmit} disabled={loading}>
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {mode === 'create' ? 'Tambah Siswa' : 'Simpan Perubahan'}
+            {mode === 'create' ? 'Buat User Siswa' : 'Simpan Perubahan'}
           </Button>
         </DialogFooter>
       </DialogContent>
