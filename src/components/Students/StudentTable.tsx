@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Search, UserPlus, PenLine, Trash2, Download, Upload } from "lucide-react";
 import { StudentForm, StudentFormData } from "./StudentForm";
+import { StudentTemplateDownload } from "./StudentTemplateDownload";
 import * as XLSX from 'xlsx';
 
 interface Student {
@@ -147,11 +147,21 @@ export function StudentTable() {
       const workbook = XLSX.utils.book_new();
       const worksheet = XLSX.utils.json_to_sheet(exportData);
       
+      // Set column widths
+      worksheet['!cols'] = [
+        { wch: 15 }, // NIS
+        { wch: 25 }, // Nama Lengkap
+        { wch: 15 }, // Kelas
+        { wch: 15 }, // Gender
+        { wch: 15 }, // Skor Sosial
+        { wch: 30 }  // Email
+      ];
+      
       // Add worksheet to workbook
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Siswa");
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Data Siswa");
       
       // Generate Excel file and trigger download
-      XLSX.writeFile(workbook, "data-siswa.xlsx");
+      XLSX.writeFile(workbook, `data-siswa-${new Date().toISOString().split('T')[0]}.xlsx`);
       
       toast({
         title: "Berhasil",
@@ -186,28 +196,77 @@ export function StudentTable() {
           const jsonData = XLSX.utils.sheet_to_json(worksheet);
           
           // Validate data structure
-          if (!jsonData.length) throw new Error("File Excel tidak memiliki data");
+          if (!jsonData.length) {
+            throw new Error("File Excel tidak memiliki data");
+          }
+          
+          // Check required columns
+          const firstRow = jsonData[0] as any;
+          const requiredColumns = ['NIS', 'Nama Lengkap', 'Kelas'];
+          const missingColumns = requiredColumns.filter(col => !(col in firstRow));
+          
+          if (missingColumns.length > 0) {
+            throw new Error(`Kolom yang diperlukan tidak ditemukan: ${missingColumns.join(', ')}`);
+          }
           
           // Track success and failures
           let successCount = 0;
           let failureCount = 0;
+          const errorMessages: string[] = [];
           
           // Process each row
-          for (const row of jsonData) {
+          for (let i = 0; i < jsonData.length; i++) {
             try {
-              const record = row as any;
+              const record = jsonData[i] as any;
               
+              // Skip empty rows
+              if (!record.NIS && !record['Nama Lengkap'] && !record.Kelas) {
+                continue;
+              }
+              
+              // Validate required fields
               if (!record.NIS || !record['Nama Lengkap'] || !record.Kelas) {
                 failureCount++;
+                errorMessages.push(`Baris ${i + 2}: Data NIS, Nama, atau Kelas kosong`);
+                continue;
+              }
+              
+              // Validate gender
+              const gender = record.Gender || "Laki-laki";
+              if (!['Laki-laki', 'Perempuan'].includes(gender)) {
+                failureCount++;
+                errorMessages.push(`Baris ${i + 2}: Gender harus "Laki-laki" atau "Perempuan"`);
+                continue;
+              }
+              
+              // Validate social score
+              const socialScore = record['Skor Sosial'] || "Sedang";
+              if (!['Tinggi', 'Sedang', 'Rendah'].includes(socialScore)) {
+                failureCount++;
+                errorMessages.push(`Baris ${i + 2}: Skor Sosial harus "Tinggi", "Sedang", atau "Rendah"`);
+                continue;
+              }
+              
+              // Check if NIS already exists
+              const { data: existingStudent } = await supabase
+                .from('profiles')
+                .select('user_metadata')
+                .eq('role', 'student')
+                .contains('user_metadata', { nis: record.NIS })
+                .single();
+                
+              if (existingStudent) {
+                failureCount++;
+                errorMessages.push(`Baris ${i + 2}: NIS ${record.NIS} sudah terdaftar`);
                 continue;
               }
               
               // Generate email if not provided
-              const email = record.Email || `${record.NIS}@student.example.com`;
-              const password = Math.random().toString(36).slice(-8); // Generate random password
+              const email = record.Email || `${record.NIS}@student.sekolah.sch.id`;
+              const password = `siswa${record.NIS}`; // Generate password based on NIS
               
               // Create auth user
-              await supabase.auth.admin.createUser({
+              const { error } = await supabase.auth.admin.createUser({
                 email: email,
                 password: password,
                 email_confirm: true,
@@ -216,26 +275,42 @@ export function StudentTable() {
                   role: "student",
                   nis: record.NIS,
                   class: record.Kelas,
-                  gender: record.Gender || "Laki-laki",
-                  social_score: record['Skor Sosial'] || "Sedang"
+                  gender: gender,
+                  social_score: socialScore
                 }
               });
               
+              if (error) {
+                failureCount++;
+                errorMessages.push(`Baris ${i + 2}: ${error.message}`);
+                continue;
+              }
+              
               successCount++;
-            } catch (error) {
+            } catch (error: any) {
               failureCount++;
-              console.error("Error importing row:", error);
+              errorMessages.push(`Baris ${i + 2}: ${error.message}`);
             }
           }
           
           // Refresh data
           fetchStudents();
           
-          toast({
-            title: "Import selesai",
-            description: `Berhasil: ${successCount} siswa, Gagal: ${failureCount} siswa`,
-            duration: 5000,
-          });
+          // Show detailed results
+          if (successCount > 0) {
+            toast({
+              title: "Import selesai",
+              description: `Berhasil: ${successCount} siswa${failureCount > 0 ? `, Gagal: ${failureCount} siswa` : ''}`,
+              duration: 5000,
+            });
+          } else {
+            toast({
+              title: "Import gagal",
+              description: errorMessages.slice(0, 3).join('; ') + (errorMessages.length > 3 ? '...' : ''),
+              variant: "destructive",
+              duration: 8000,
+            });
+          }
           
           // Clear input
           e.target.value = '';
@@ -295,6 +370,8 @@ export function StudentTable() {
           </div>
           
           <div className="flex gap-2">
+            <StudentTemplateDownload />
+            
             <Button variant="outline" onClick={handleExportToExcel} disabled={exporting || !students.length}>
               <Download className="h-4 w-4 mr-2" />
               Export
@@ -303,7 +380,7 @@ export function StudentTable() {
             <div className="relative">
               <Button variant="outline" disabled={importing}>
                 <Upload className="h-4 w-4 mr-2" />
-                Import
+                {importing ? "Importing..." : "Import"}
                 <Input 
                   type="file" 
                   accept=".xlsx, .xls" 
@@ -320,6 +397,19 @@ export function StudentTable() {
             </Button>
           </div>
         </div>
+      </div>
+      
+      {/* Info Box untuk Template */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <h3 className="text-sm font-medium text-blue-800 mb-2">Panduan Import Data Siswa:</h3>
+        <ul className="text-xs text-blue-700 space-y-1">
+          <li>• Unduh template Excel terlebih dahulu menggunakan tombol "Download Template"</li>
+          <li>• Isi data sesuai format yang telah disediakan</li>
+          <li>• NIS, Nama Lengkap, dan Kelas wajib diisi</li>
+          <li>• Gender: "Laki-laki" atau "Perempuan"</li>
+          <li>• Skor Sosial: "Tinggi", "Sedang", atau "Rendah"</li>
+          <li>• Email opsional, jika kosong akan dibuat otomatis</li>
+        </ul>
       </div>
       
       <div className="rounded-md border shadow-sm">
