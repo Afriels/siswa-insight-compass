@@ -130,7 +130,7 @@ export const TestResult = ({ test, session, onBack }: TestResultProps) => {
               <div key={category}>
                 <div className="flex justify-between text-sm mb-1">
                   <span className="capitalize">{category}</span>
-                  <span>{score}/5</span>
+                  <span>{String(score)}/5</span>
                 </div>
                 <Progress value={(Number(score) / 5) * 100} className="w-full" />
               </div>
