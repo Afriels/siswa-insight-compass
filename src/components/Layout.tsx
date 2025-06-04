@@ -24,7 +24,8 @@ import {
   ChartBar, 
   User, 
   MessageSquare,
-  LogOut
+  LogOut,
+  TestTube
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";

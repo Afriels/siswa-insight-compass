@@ -185,6 +185,130 @@ export type Database = {
         }
         Relationships: []
       }
+      psychology_test_questions: {
+        Row: {
+          created_at: string
+          id: string
+          options: Json
+          order_index: number
+          question_text: string
+          question_type: string
+          scoring_config: Json | null
+          test_template_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          options?: Json
+          order_index?: number
+          question_text: string
+          question_type?: string
+          scoring_config?: Json | null
+          test_template_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          options?: Json
+          order_index?: number
+          question_text?: string
+          question_type?: string
+          scoring_config?: Json | null
+          test_template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "psychology_test_questions_test_template_id_fkey"
+            columns: ["test_template_id"]
+            isOneToOne: false
+            referencedRelation: "psychology_test_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      psychology_test_sessions: {
+        Row: {
+          answers: Json | null
+          completed_at: string | null
+          created_at: string
+          id: string
+          results: Json | null
+          started_at: string
+          status: string
+          test_template_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          answers?: Json | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          results?: Json | null
+          started_at?: string
+          status?: string
+          test_template_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          answers?: Json | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          results?: Json | null
+          started_at?: string
+          status?: string
+          test_template_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "psychology_test_sessions_test_template_id_fkey"
+            columns: ["test_template_id"]
+            isOneToOne: false
+            referencedRelation: "psychology_test_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      psychology_test_templates: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          description: string
+          duration_minutes: number
+          id: string
+          instructions: string | null
+          is_active: boolean | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          created_by?: string | null
+          description: string
+          duration_minutes?: number
+          id?: string
+          instructions?: string | null
+          is_active?: boolean | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          duration_minutes?: number
+          id?: string
+          instructions?: string | null
+          is_active?: boolean | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -1,221 +1,196 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { TestTube, Clock, Users } from "lucide-react";
+import { TestTube, Clock, Users, Settings } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/providers/AuthProvider";
+import { useToast } from "@/hooks/use-toast";
+import { TestSession } from "./TestSession";
+import { TestResult } from "./TestResult";
+import { TestManagement } from "./TestManagement";
 
-interface Question {
-  id: number;
-  text: string;
-  options: string[];
-}
-
-interface TestResult {
-  category: string;
-  score: number;
+interface TestTemplate {
+  id: string;
+  title: string;
   description: string;
-  recommendations: string[];
+  category: string;
+  duration_minutes: number;
+  instructions: string;
 }
 
-const psychologyTests = [
-  {
-    id: "personality",
-    title: "Tes Kepribadian Big Five",
-    description: "Mengetahui tipe kepribadian berdasarkan 5 dimensi utama",
-    duration: "15-20 menit",
-    questions: 50,
-    category: "Kepribadian"
-  },
-  {
-    id: "stress",
-    title: "Tes Tingkat Stres",
-    description: "Mengukur tingkat stres dan tekanan yang dialami",
-    duration: "10-15 menit", 
-    questions: 30,
-    category: "Mental Health"
-  },
-  {
-    id: "learning-style",
-    title: "Tes Gaya Belajar",
-    description: "Mengetahui gaya belajar yang paling efektif untuk Anda",
-    duration: "10 menit",
-    questions: 25,
-    category: "Akademik"
-  },
-  {
-    id: "career",
-    title: "Tes Minat Karir",
-    description: "Mengetahui bidang karir yang sesuai dengan minat dan bakat",
-    duration: "20-25 menit",
-    questions: 60,
-    category: "Karir"
-  }
-];
-
-const sampleQuestions: Question[] = [
-  {
-    id: 1,
-    text: "Saya merasa mudah bergaul dengan orang baru",
-    options: ["Sangat Tidak Setuju", "Tidak Setuju", "Netral", "Setuju", "Sangat Setuju"]
-  },
-  {
-    id: 2,
-    text: "Saya lebih suka bekerja sendiri daripada dalam tim",
-    options: ["Sangat Tidak Setuju", "Tidak Setuju", "Netral", "Setuju", "Sangat Setuju"]
-  }
-];
+interface TestSession {
+  id: string;
+  status: string;
+  answers: Record<string, any>;
+  results: Record<string, any>;
+}
 
 export const PsychologyTest = () => {
-  const [selectedTest, setSelectedTest] = useState<string | null>(null);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<number[]>([]);
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [testResult, setTestResult] = useState<TestResult | null>(null);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [testTemplates, setTestTemplates] = useState<TestTemplate[]>([]);
+  const [selectedTest, setSelectedTest] = useState<TestTemplate | null>(null);
+  const [currentSession, setCurrentSession] = useState<TestSession | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [showManagement, setShowManagement] = useState(false);
+  const [userRole, setUserRole] = useState<string>('student');
 
-  const handleStartTest = (testId: string) => {
-    setSelectedTest(testId);
-    setCurrentQuestion(0);
-    setAnswers([]);
-    setIsCompleted(false);
-    setTestResult(null);
+  useEffect(() => {
+    fetchTestTemplates();
+    fetchUserRole();
+  }, []);
+
+  const fetchUserRole = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+        
+      if (error) throw error;
+      
+      setUserRole(data.role || 'student');
+    } catch (error) {
+      console.error("Error fetching user role:", error);
+    }
   };
 
-  const handleAnswer = (optionIndex: number) => {
-    const newAnswers = [...answers];
-    newAnswers[currentQuestion] = optionIndex;
-    setAnswers(newAnswers);
+  const fetchTestTemplates = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('psychology_test_templates')
+        .select('*')
+        .eq('is_active', true)
+        .order('category', { ascending: true });
 
-    if (currentQuestion < sampleQuestions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    } else {
-      // Complete test and calculate result
-      const mockResult: TestResult = {
-        category: "Ekstrovert",
-        score: 75,
-        description: "Anda memiliki kecenderungan kepribadian ekstrovert yang cukup tinggi. Anda mudah bergaul dan merasa nyaman dalam interaksi sosial.",
-        recommendations: [
-          "Manfaatkan kemampuan sosial Anda untuk membangun jaringan",
-          "Coba kegiatan yang melibatkan teamwork",
-          "Pertimbangkan peran leadership dalam organisasi"
-        ]
-      };
-      setTestResult(mockResult);
-      setIsCompleted(true);
+      if (error) throw error;
+
+      setTestTemplates(data || []);
+    } catch (error) {
+      console.error("Error fetching test templates:", error);
+      toast({
+        title: "Error",
+        description: "Gagal memuat daftar tes psikologi",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleStartTest = async (test: TestTemplate) => {
+    if (!user) {
+      toast({
+        title: "Login Required",
+        description: "Anda harus login untuk mengikuti tes",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Create new test session
+      const { data, error } = await supabase
+        .from('psychology_test_sessions')
+        .insert({
+          user_id: user.id,
+          test_template_id: test.id,
+          status: 'in_progress'
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setSelectedTest(test);
+      setCurrentSession(data);
+    } catch (error) {
+      console.error("Error starting test:", error);
+      toast({
+        title: "Error",
+        description: "Gagal memulai tes",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleTestComplete = (results: Record<string, any>) => {
+    setCurrentSession(prev => prev ? { ...prev, results, status: 'completed' } : null);
   };
 
   const resetTest = () => {
     setSelectedTest(null);
-    setCurrentQuestion(0);
-    setAnswers([]);
-    setIsCompleted(false);
-    setTestResult(null);
+    setCurrentSession(null);
   };
 
-  if (selectedTest && !isCompleted) {
-    const progress = ((currentQuestion + 1) / sampleQuestions.length) * 100;
-    const question = sampleQuestions[currentQuestion];
-
+  if (loading) {
     return (
-      <div className="max-w-2xl mx-auto space-y-6">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-2">
-            {psychologyTests.find(t => t.id === selectedTest)?.title}
-          </h2>
-          <p className="text-muted-foreground">
-            Pertanyaan {currentQuestion + 1} dari {sampleQuestions.length}
-          </p>
-        </div>
-
-        <Progress value={progress} className="w-full" />
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">{question.text}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {question.options.map((option, index) => (
-              <Button
-                key={index}
-                variant="outline"
-                className="w-full text-left justify-start h-auto p-4"
-                onClick={() => handleAnswer(index)}
-              >
-                {option}
-              </Button>
-            ))}
-          </CardContent>
-        </Card>
-
-        <div className="flex justify-between">
-          <Button variant="outline" onClick={resetTest}>
-            Batal
-          </Button>
-          {currentQuestion > 0 && (
-            <Button 
-              variant="outline" 
-              onClick={() => setCurrentQuestion(currentQuestion - 1)}
-            >
-              Sebelumnya
-            </Button>
-          )}
-        </div>
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-counseling-blue"></div>
       </div>
     );
   }
 
-  if (isCompleted && testResult) {
+  if (showManagement && (userRole === 'counselor' || userRole === 'admin')) {
     return (
-      <div className="max-w-2xl mx-auto space-y-6">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-2">Hasil Tes</h2>
-          <Badge variant="secondary" className="text-lg px-3 py-1">
-            {testResult.category}
-          </Badge>
-        </div>
+      <TestManagement 
+        onBack={() => setShowManagement(false)}
+        onTestsUpdated={fetchTestTemplates}
+      />
+    );
+  }
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Skor Anda: {testResult.score}/100</CardTitle>
-            <Progress value={testResult.score} className="w-full" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground mb-4">{testResult.description}</p>
-            
-            <h4 className="font-semibold mb-2">Rekomendasi:</h4>
-            <ul className="list-disc list-inside space-y-1">
-              {testResult.recommendations.map((rec, index) => (
-                <li key={index} className="text-sm text-muted-foreground">{rec}</li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+  if (selectedTest && currentSession) {
+    if (currentSession.status === 'completed' && currentSession.results) {
+      return (
+        <TestResult
+          test={selectedTest}
+          session={currentSession}
+          onBack={resetTest}
+        />
+      );
+    }
 
-        <div className="flex gap-4">
-          <Button onClick={resetTest} className="flex-1">
-            Ambil Tes Lain
-          </Button>
-          <Button variant="outline" onClick={() => window.print()}>
-            Cetak Hasil
-          </Button>
-        </div>
-      </div>
+    return (
+      <TestSession
+        test={selectedTest}
+        session={currentSession}
+        onComplete={handleTestComplete}
+        onBack={resetTest}
+      />
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold mb-2">Tes Psikologi Online</h1>
-        <p className="text-muted-foreground">
-          Pilih tes psikologi yang ingin Anda ikuti untuk mengetahui lebih dalam tentang diri Anda
-        </p>
+      <div className="flex justify-between items-center">
+        <div className="text-center flex-1">
+          <h1 className="text-2xl font-bold mb-2">Tes Psikologi Online</h1>
+          <p className="text-muted-foreground">
+            Pilih tes psikologi yang ingin Anda ikuti untuk mengetahui lebih dalam tentang diri Anda
+          </p>
+        </div>
+        
+        {(userRole === 'counselor' || userRole === 'admin') && (
+          <Button
+            variant="outline"
+            onClick={() => setShowManagement(true)}
+            className="flex items-center gap-2"
+          >
+            <Settings className="h-4 w-4" />
+            Kelola Tes
+          </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {psychologyTests.map((test) => (
+        {testTemplates.map((test) => (
           <Card key={test.id} className="hover:shadow-md transition-shadow">
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -229,16 +204,12 @@ export const PsychologyTest = () => {
               <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
                 <div className="flex items-center gap-1">
                   <Clock className="h-4 w-4" />
-                  {test.duration}
-                </div>
-                <div className="flex items-center gap-1">
-                  <Users className="h-4 w-4" />
-                  {test.questions} pertanyaan
+                  {test.duration_minutes} menit
                 </div>
               </div>
               <Button 
                 className="w-full"
-                onClick={() => handleStartTest(test.id)}
+                onClick={() => handleStartTest(test)}
               >
                 Mulai Tes
               </Button>
@@ -246,6 +217,16 @@ export const PsychologyTest = () => {
           </Card>
         ))}
       </div>
+
+      {testTemplates.length === 0 && (
+        <div className="text-center py-12">
+          <TestTube className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-semibold mb-2">Belum Ada Tes Tersedia</h3>
+          <p className="text-muted-foreground">
+            Saat ini belum ada tes psikologi yang tersedia.
+          </p>
+        </div>
+      )}
     </div>
   );
 };
