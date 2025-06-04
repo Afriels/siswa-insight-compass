@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -47,6 +46,7 @@ export function StudentTable() {
   const fetchStudents = async () => {
     try {
       setLoading(true);
+      console.log("Fetching students from profiles table...");
       
       const { data, error } = await supabase
         .from('profiles')
@@ -54,14 +54,18 @@ export function StudentTable() {
         .eq('role', 'student')
         .order('created_at', { ascending: false });
         
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
       
+      console.log("Students fetched successfully:", data);
       setStudents(data || []);
     } catch (error: any) {
       console.error("Error fetching students:", error);
       toast({
         title: "Error",
-        description: "Gagal mengambil data siswa",
+        description: `Gagal mengambil data siswa: ${error.message}`,
         variant: "destructive",
       });
     } finally {
@@ -109,21 +113,10 @@ export function StudentTable() {
     if (!studentToDelete) return;
     
     try {
-      const { error } = await supabase.auth.admin.deleteUser(studentToDelete);
-      
-      if (error) throw error;
-      
+      // For now, we'll just show a message that admin functions are not available
       toast({
-        title: "Berhasil",
-        description: "Data siswa berhasil dihapus",
-      });
-      
-      fetchStudents();
-    } catch (error: any) {
-      console.error("Error deleting student:", error);
-      toast({
-        title: "Error",
-        description: error.message || "Gagal menghapus data siswa",
+        title: "Fitur Tidak Tersedia",
+        description: "Penghapusan user memerlukan konfigurasi admin yang belum tersedia. Hubungi administrator sistem.",
         variant: "destructive",
       });
     } finally {
@@ -142,16 +135,11 @@ export function StudentTable() {
     if (!studentForPassword || !newPassword) return;
     
     try {
-      const { error } = await supabase.auth.admin.updateUserById(
-        studentForPassword.id,
-        { password: newPassword }
-      );
-      
-      if (error) throw error;
-      
+      // For now, we'll just show a message that admin functions are not available
       toast({
-        title: "Berhasil",
-        description: `Password siswa ${studentForPassword.full_name} berhasil diperbarui`,
+        title: "Fitur Tidak Tersedia",
+        description: "Reset password memerlukan konfigurasi admin yang belum tersedia. Hubungi administrator sistem.",
+        variant: "destructive",
       });
       
       setIsPasswordDialogOpen(false);

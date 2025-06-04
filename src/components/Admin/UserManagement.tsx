@@ -48,19 +48,25 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
+      console.log("Fetching users from profiles table...");
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .order('created_at', { ascending: false });
         
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
       
+      console.log("Users fetched successfully:", data);
       setUsers(data || []);
     } catch (error: any) {
       console.error("Error fetching users:", error);
       toast({
         title: "Error",
-        description: "Gagal mengambil data pengguna",
+        description: `Gagal mengambil data pengguna: ${error.message}`,
         variant: "destructive",
       });
     } finally {
@@ -70,7 +76,6 @@ const UserManagement = () => {
   
   useEffect(() => {
     fetchUsers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
   const filteredUsers = users.filter(user => 
@@ -90,53 +95,14 @@ const UserManagement = () => {
         return;
       }
       
-      // Check if email or fullName already exists
-      const { data: existingProfiles, error: checkError } = await supabase
-        .from('profiles')
-        .select('username, full_name')
-        .or(`username.eq.${newUser.email},full_name.eq.${newUser.fullName}`);
-
-      if (checkError) throw checkError;
-      
-      if (existingProfiles && existingProfiles.length > 0) {
-        const duplicateEmail = existingProfiles.some(profile => profile.username === newUser.email);
-        const duplicateName = existingProfiles.some(profile => profile.full_name === newUser.fullName);
-        
-        if (duplicateEmail) {
-          throw new Error("Email sudah terdaftar. Gunakan email lain.");
-        }
-        
-        if (duplicateName) {
-          throw new Error("Nama sudah terdaftar. Gunakan nama lain.");
-        }
-      }
-      
-      const { error } = await supabase.auth.admin.createUser({
-        email: newUser.email,
-        password: newUser.password,
-        email_confirm: true,
-        user_metadata: {
-          full_name: newUser.fullName,
-          role: newUser.role
-        }
-      });
-      
-      if (error) throw error;
-      
+      // Show message that admin functions are not available
       toast({
-        title: "Berhasil",
-        description: "Pengguna baru telah berhasil dibuat",
+        title: "Fitur Tidak Tersedia",
+        description: "Pembuatan user baru memerlukan konfigurasi admin yang belum tersedia. Hubungi administrator sistem.",
+        variant: "destructive",
+        duration: 8000,
       });
       
-      setNewUser({
-        email: "",
-        password: "",
-        fullName: "",
-        role: "student"
-      });
-      
-      setIsDialogOpen(false);
-      fetchUsers();
     } catch (error: any) {
       console.error("Error creating user:", error);
       toast({
@@ -178,16 +144,13 @@ const UserManagement = () => {
         return;
       }
       
-      const { error } = await supabase.auth.admin.deleteUser(userId);
-      
-      if (error) throw error;
-      
+      // Show message that admin functions are not available
       toast({
-        title: "Berhasil",
-        description: "Pengguna berhasil dihapus",
+        title: "Fitur Tidak Tersedia",
+        description: "Penghapusan user memerlukan konfigurasi admin yang belum tersedia. Hubungi administrator sistem.",
+        variant: "destructive",
       });
       
-      fetchUsers();
     } catch (error: any) {
       console.error("Error deleting user:", error);
       toast({
@@ -229,11 +192,18 @@ const UserManagement = () => {
             <DialogHeader>
               <DialogTitle>Tambah User Baru</DialogTitle>
               <DialogDescription>
-                Isi form di bawah untuk menambahkan user baru
+                Fitur ini memerlukan konfigurasi admin tambahan. Hubungi administrator sistem.
               </DialogDescription>
             </DialogHeader>
             
             <div className="space-y-4 py-4">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <p className="text-sm text-yellow-800">
+                  <strong>Catatan:</strong> Pembuatan user baru memerlukan konfigurasi admin tambahan 
+                  yang saat ini belum tersedia. Silakan hubungi administrator sistem.
+                </p>
+              </div>
+              
               <div className="space-y-2">
                 <Label htmlFor="fullName">Nama Lengkap</Label>
                 <Input 
@@ -241,6 +211,7 @@ const UserManagement = () => {
                   value={newUser.fullName}
                   onChange={e => setNewUser({...newUser, fullName: e.target.value})}
                   placeholder="Masukkan nama lengkap"
+                  disabled
                 />
               </div>
               
@@ -252,6 +223,7 @@ const UserManagement = () => {
                   value={newUser.email}
                   onChange={e => setNewUser({...newUser, email: e.target.value})}
                   placeholder="Masukkan email"
+                  disabled
                 />
               </div>
               
@@ -263,6 +235,7 @@ const UserManagement = () => {
                   value={newUser.password}
                   onChange={e => setNewUser({...newUser, password: e.target.value})}
                   placeholder="Masukkan password"
+                  disabled
                 />
               </div>
               
@@ -271,6 +244,7 @@ const UserManagement = () => {
                 <Select 
                   value={newUser.role} 
                   onValueChange={value => setNewUser({...newUser, role: value})}
+                  disabled
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Pilih peran" />
@@ -291,8 +265,9 @@ const UserManagement = () => {
               <Button 
                 className="bg-counseling-blue hover:bg-blue-600"
                 onClick={handleCreateUser}
+                disabled
               >
-                Tambah User
+                Fitur Tidak Tersedia
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -306,6 +281,16 @@ const UserManagement = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="max-w-sm"
           />
+        </div>
+        
+        {/* Info Box */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <h3 className="text-sm font-medium text-blue-800 mb-2">Informasi Penting:</h3>
+          <ul className="text-xs text-blue-700 space-y-1">
+            <li>• Saat ini fitur pembuatan dan penghapusan user memerlukan konfigurasi admin tambahan</li>
+            <li>• Fitur edit peran user masih dapat digunakan untuk user yang sudah ada</li>
+            <li>• Untuk menambah user baru, hubungi administrator sistem</li>
+          </ul>
         </div>
         
         {loading ? (

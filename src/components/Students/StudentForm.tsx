@@ -67,34 +67,15 @@ export const StudentForm = ({ isOpen, onClose, onSuccess, initialData, mode }: S
       }
       
       if (mode === 'create') {
-        // Generate email and password if not provided
-        const email = formData.email || `${formData.nis}@student.sekolah.sch.id`;
-        const password = formData.password || `siswa${formData.nis}`;
-        
-        // Create auth user first
-        const { error: authError, data: authData } = await supabase.auth.admin.createUser({
-          email: email,
-          password: password,
-          email_confirm: true,
-          user_metadata: {
-            full_name: formData.full_name,
-            role: "student",
-            nis: formData.nis,
-            class: formData.class,
-            gender: formData.gender,
-            social_score: formData.social_score
-          }
-        });
-        
-        if (authError) throw authError;
-        
+        // Show message that admin functions are not available
         toast({
-          title: "Siswa berhasil ditambahkan",
-          description: `Akun siswa dibuat dengan email: ${email} dan password: ${password}`,
+          title: "Fitur Tidak Tersedia",
+          description: "Pembuatan user siswa baru memerlukan konfigurasi admin yang belum tersedia. Hubungi administrator sistem untuk menambahkan siswa baru.",
+          variant: "destructive",
           duration: 8000,
         });
       } else {
-        // Update existing user profile
+        // Update existing user profile - this should work with regular permissions
         if (!formData.id) throw new Error("ID siswa tidak ditemukan");
         
         const { error } = await supabase
@@ -116,10 +97,10 @@ export const StudentForm = ({ isOpen, onClose, onSuccess, initialData, mode }: S
           title: "Data siswa berhasil diperbarui",
           duration: 3000,
         });
+        
+        onSuccess();
+        onClose();
       }
-      
-      onSuccess();
-      onClose();
       
     } catch (error: any) {
       console.error("Error creating/updating student:", error);
@@ -140,7 +121,7 @@ export const StudentForm = ({ isOpen, onClose, onSuccess, initialData, mode }: S
           <DialogTitle>{mode === 'create' ? 'Tambah User Siswa Baru' : 'Edit Data Siswa'}</DialogTitle>
           <DialogDescription>
             {mode === 'create' 
-              ? 'Masukkan data siswa baru. Akun login akan dibuat otomatis.'
+              ? 'Fitur ini memerlukan konfigurasi admin tambahan. Hubungi administrator sistem.'
               : 'Perbarui data siswa yang sudah ada.'}
           </DialogDescription>
         </DialogHeader>
@@ -154,6 +135,7 @@ export const StudentForm = ({ isOpen, onClose, onSuccess, initialData, mode }: S
               onChange={(e) => handleChange('nis', e.target.value)}
               placeholder="Masukkan NIS"
               className="col-span-3"
+              disabled={mode === 'create'}
             />
           </div>
           
@@ -213,31 +195,12 @@ export const StudentForm = ({ isOpen, onClose, onSuccess, initialData, mode }: S
           </div>
           
           {mode === 'create' && (
-            <>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="email" className="text-right">Email Login</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleChange('email', e.target.value)}
-                  placeholder="Opsional - akan dibuat otomatis jika kosong"
-                  className="col-span-3"
-                />
-              </div>
-              
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="password" className="text-right">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => handleChange('password', e.target.value)}
-                  placeholder="Opsional - default: siswa+NIS"
-                  className="col-span-3"
-                />
-              </div>
-            </>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <p className="text-sm text-yellow-800">
+                <strong>Catatan:</strong> Pembuatan user siswa baru memerlukan konfigurasi admin tambahan. 
+                Silakan hubungi administrator sistem untuk menambahkan siswa baru ke database.
+              </p>
+            </div>
           )}
         </div>
         
@@ -245,9 +208,9 @@ export const StudentForm = ({ isOpen, onClose, onSuccess, initialData, mode }: S
           <Button variant="outline" onClick={onClose}>
             Batal
           </Button>
-          <Button onClick={handleSubmit} disabled={loading}>
+          <Button onClick={handleSubmit} disabled={loading || mode === 'create'}>
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {mode === 'create' ? 'Buat User Siswa' : 'Simpan Perubahan'}
+            {mode === 'create' ? 'Fitur Tidak Tersedia' : 'Simpan Perubahan'}
           </Button>
         </DialogFooter>
       </DialogContent>

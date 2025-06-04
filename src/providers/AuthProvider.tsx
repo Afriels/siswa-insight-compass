@@ -2,6 +2,7 @@
 import { createContext, useState, useEffect, useContext, ReactNode, useCallback } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 type AuthContextType = {
   session: Session | null;
@@ -64,9 +65,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [resetInactivityTimer, inactivityTimer]);
 
   useEffect(() => {
+    console.log("Setting up auth state listener...");
+    
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log("Auth state changed:", event, session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
@@ -80,7 +84,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error("Error getting session:", error);
+      }
+      console.log("Initial session check:", session?.user?.id);
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -94,7 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       subscription.unsubscribe();
       if (inactivityTimer) clearTimeout(inactivityTimer);
     };
-  }, [resetInactivityTimer, inactivityTimer]);
+  }, []);
 
   const value = {
     session,
