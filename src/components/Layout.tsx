@@ -48,7 +48,7 @@ export function Layout({ children }: LayoutProps) {
     {
       title: "Dashboard",
       icon: Home,
-      path: "/"
+      path: "/dashboard"
     },
     {
       title: "Data Siswa",
@@ -106,7 +106,7 @@ export function Layout({ children }: LayoutProps) {
         title: "Berhasil keluar",
         description: "Anda telah keluar dari akun",
       });
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       console.error("Error signing out:", error);
       toast({
@@ -154,7 +154,9 @@ export function Layout({ children }: LayoutProps) {
                   </svg>
                 </div>
               </SidebarTrigger>
-              <h1 className="text-xl font-semibold text-counseling-blue">BK Connect</h1>
+              <Link to="/dashboard">
+                <h1 className="text-xl font-semibold text-counseling-blue">BK Connect</h1>
+              </Link>
             </div>
             
             <DropdownMenu>
@@ -172,6 +174,10 @@ export function Layout({ children }: LayoutProps) {
                 <DropdownMenuItem onClick={() => navigate("/profile")}>
                   <User className="mr-2 h-4 w-4" />
                   <span>Profil</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/")}>
+                  <Home className="mr-2 h-4 w-4" />
+                  <span>Halaman Utama</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="mr-2 h-4 w-4" />
