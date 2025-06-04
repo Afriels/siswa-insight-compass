@@ -333,65 +333,6 @@ export const QuestionManager = ({ test, onBack }: QuestionManagerProps) => {
   );
 };
 
-const handleDeleteQuestion = async (questionId: string) => {
-  if (!confirm("Apakah Anda yakin ingin menghapus pertanyaan ini?")) return;
-
-  try {
-    const { error } = await supabase
-      .from('psychology_test_questions')
-      .delete()
-      .eq('id', questionId);
-
-    if (error) throw error;
-
-    toast({
-      title: "Berhasil",
-      description: "Pertanyaan berhasil dihapus",
-    });
-
-    fetchQuestions();
-  } catch (error) {
-    console.error("Error deleting question:", error);
-    toast({
-      title: "Error",
-      description: "Gagal menghapus pertanyaan",
-      variant: "destructive",
-    });
-  }
-};
-
-const handleMoveQuestion = async (questionId: string, direction: 'up' | 'down') => {
-  const currentIndex = questions.findIndex(q => q.id === questionId);
-  const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-  
-  if (targetIndex < 0 || targetIndex >= questions.length) return;
-
-  const currentQuestion = questions[currentIndex];
-  const targetQuestion = questions[targetIndex];
-
-  try {
-    // Swap order indices
-    await supabase
-      .from('psychology_test_questions')
-      .update({ order_index: targetQuestion.order_index })
-      .eq('id', currentQuestion.id);
-
-    await supabase
-      .from('psychology_test_questions')
-      .update({ order_index: currentQuestion.order_index })
-      .eq('id', targetQuestion.id);
-
-    fetchQuestions();
-  } catch (error) {
-    console.error("Error moving question:", error);
-    toast({
-      title: "Error",
-      description: "Gagal memindahkan pertanyaan",
-      variant: "destructive",
-    });
-  }
-};
-
 interface QuestionFormDialogProps {
   question: Question | null;
   testCategory: string;
