@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -50,7 +49,17 @@ export const QuestionManager = ({ test, onBack }: QuestionManagerProps) => {
 
       if (error) throw error;
 
-      setQuestions(data || []);
+      // Convert the Json types to proper types
+      const convertedQuestions: Question[] = (data || []).map(q => ({
+        id: q.id,
+        question_text: q.question_text,
+        question_type: q.question_type,
+        options: Array.isArray(q.options) ? q.options as string[] : [],
+        order_index: q.order_index,
+        scoring_config: (q.scoring_config as Record<string, any>) || {}
+      }));
+
+      setQuestions(convertedQuestions);
     } catch (error) {
       console.error("Error fetching questions:", error);
       toast({
@@ -98,7 +107,13 @@ export const QuestionManager = ({ test, onBack }: QuestionManagerProps) => {
         // Update existing question
         const { error } = await supabase
           .from('psychology_test_questions')
-          .update(questionData)
+          .update({
+            question_text: questionData.question_text || '',
+            question_type: questionData.question_type,
+            options: questionData.options,
+            order_index: questionData.order_index,
+            scoring_config: questionData.scoring_config
+          })
           .eq('id', editingQuestion.id);
 
         if (error) throw error;
@@ -112,8 +127,12 @@ export const QuestionManager = ({ test, onBack }: QuestionManagerProps) => {
         const { error } = await supabase
           .from('psychology_test_questions')
           .insert({
-            ...questionData,
-            test_template_id: test.id
+            test_template_id: test.id,
+            question_text: questionData.question_text || '',
+            question_type: questionData.question_type,
+            options: questionData.options,
+            order_index: questionData.order_index,
+            scoring_config: questionData.scoring_config
           });
 
         if (error) throw error;

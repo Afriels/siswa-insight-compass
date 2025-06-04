@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -54,7 +53,17 @@ export const TestSession = ({ test, session, onComplete, onBack }: TestSessionPr
 
       if (error) throw error;
 
-      setQuestions(data || []);
+      // Convert the Json types to proper types
+      const convertedQuestions: Question[] = (data || []).map(q => ({
+        id: q.id,
+        question_text: q.question_text,
+        question_type: q.question_type,
+        options: Array.isArray(q.options) ? q.options as string[] : [],
+        order_index: q.order_index,
+        scoring_config: (q.scoring_config as Record<string, any>) || {}
+      }));
+
+      setQuestions(convertedQuestions);
     } catch (error) {
       console.error("Error fetching questions:", error);
       toast({

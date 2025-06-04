@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,6 +25,7 @@ interface TestSession {
   status: string;
   answers: Record<string, any>;
   results: Record<string, any>;
+  completed_at: string | null;
 }
 
 export const PsychologyTest = () => {
@@ -109,7 +109,13 @@ export const PsychologyTest = () => {
       if (error) throw error;
 
       setSelectedTest(test);
-      setCurrentSession(data);
+      setCurrentSession({
+        id: data.id,
+        status: data.status,
+        answers: (data.answers as Record<string, any>) || {},
+        results: (data.results as Record<string, any>) || {},
+        completed_at: data.completed_at
+      });
     } catch (error) {
       console.error("Error starting test:", error);
       toast({
@@ -121,7 +127,12 @@ export const PsychologyTest = () => {
   };
 
   const handleTestComplete = (results: Record<string, any>) => {
-    setCurrentSession(prev => prev ? { ...prev, results, status: 'completed' } : null);
+    setCurrentSession(prev => prev ? { 
+      ...prev, 
+      results, 
+      status: 'completed',
+      completed_at: new Date().toISOString()
+    } : null);
   };
 
   const resetTest = () => {
@@ -147,11 +158,15 @@ export const PsychologyTest = () => {
   }
 
   if (selectedTest && currentSession) {
-    if (currentSession.status === 'completed' && currentSession.results) {
+    if (currentSession.status === 'completed' && currentSession.results && Object.keys(currentSession.results).length > 0) {
       return (
         <TestResult
           test={selectedTest}
-          session={currentSession}
+          session={{
+            id: currentSession.id,
+            results: currentSession.results,
+            completed_at: currentSession.completed_at || new Date().toISOString()
+          }}
           onBack={resetTest}
         />
       );

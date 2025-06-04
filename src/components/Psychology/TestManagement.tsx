@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -84,7 +83,14 @@ export const TestManagement = ({ onBack, onTestsUpdated }: TestManagementProps) 
     setIsDialogOpen(true);
   };
 
-  const handleSaveTest = async (testData: Partial<TestTemplate>) => {
+  const handleSaveTest = async (testData: {
+    title: string;
+    description: string;
+    category: string;
+    duration_minutes: number;
+    instructions: string;
+    is_active: boolean;
+  }) => {
     try {
       if (editingTest?.id) {
         // Update existing test
@@ -314,7 +320,14 @@ interface TestFormDialogProps {
   test: TestTemplate | null;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: Partial<TestTemplate>) => void;
+  onSave: (data: {
+    title: string;
+    description: string;
+    category: string;
+    duration_minutes: number;
+    instructions: string;
+    is_active: boolean;
+  }) => void;
 }
 
 const TestFormDialog = ({ test, isOpen, onClose, onSave }: TestFormDialogProps) => {
