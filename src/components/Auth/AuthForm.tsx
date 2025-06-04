@@ -69,7 +69,8 @@ export function AuthForm() {
         description: "Anda telah berhasil masuk ke akun Anda",
       });
       
-      navigate("/");
+      // Redirect to dashboard after successful login
+      navigate("/dashboard");
     } catch (error: any) {
       console.error("Login error:", error);
       toast({
