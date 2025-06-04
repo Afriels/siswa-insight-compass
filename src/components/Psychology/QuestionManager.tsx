@@ -343,7 +343,12 @@ interface QuestionFormDialogProps {
 }
 
 const QuestionFormDialog = ({ question, testCategory, isOpen, onClose, onSave, getDefaultOptions }: QuestionFormDialogProps) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    question_text: string;
+    question_type: string;
+    options: string[];
+    scoring_config: { category: string; [key: string]: any };
+  }>({
     question_text: '',
     question_type: 'likert',
     options: getDefaultOptions('likert'),
@@ -356,7 +361,7 @@ const QuestionFormDialog = ({ question, testCategory, isOpen, onClose, onSave, g
         question_text: question.question_text,
         question_type: question.question_type,
         options: question.options,
-        scoring_config: question.scoring_config || { category: 'general' }
+        scoring_config: { category: 'general', ...question.scoring_config }
       });
     } else {
       setFormData({
