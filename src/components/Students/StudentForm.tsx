@@ -67,34 +67,48 @@ export const StudentForm = ({ isOpen, onClose, onSuccess, initialData, mode }: S
       }
       
       if (mode === 'create') {
-        // Show message that admin functions are not available
+        // Show improved message about admin functions
         toast({
-          title: "Fitur Tidak Tersedia",
-          description: "Pembuatan user siswa baru memerlukan konfigurasi admin yang belum tersedia. Hubungi administrator sistem untuk menambahkan siswa baru.",
-          variant: "destructive",
+          title: "Fitur Pembuatan User Siswa",
+          description: "Untuk membuat user siswa baru, silakan minta siswa untuk mendaftar melalui halaman login terlebih dahulu. Setelah itu, data profil mereka dapat diperbarui melalui form edit.",
+          variant: "default",
           duration: 8000,
         });
       } else {
-        // Update existing user profile - this should work with regular permissions
-        if (!formData.id) throw new Error("ID siswa tidak ditemukan");
+        // Update existing user profile
+        if (!formData.id) {
+          toast({
+            title: "Error",
+            description: "ID siswa tidak ditemukan",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        // Prepare user metadata
+        const user_metadata = {
+          nis: formData.nis,
+          class: formData.class,
+          gender: formData.gender,
+          social_score: formData.social_score
+        };
         
         const { error } = await supabase
           .from('profiles')
           .update({
             full_name: formData.full_name,
-            user_metadata: {
-              nis: formData.nis,
-              class: formData.class,
-              gender: formData.gender,
-              social_score: formData.social_score
-            }
+            user_metadata: user_metadata
           })
           .eq('id', formData.id);
           
-        if (error) throw error;
+        if (error) {
+          console.error("Database error:", error);
+          throw new Error(`Database error: ${error.message}`);
+        }
         
         toast({
-          title: "Data siswa berhasil diperbarui",
+          title: "Sukses",
+          description: "Data siswa berhasil diperbarui",
           duration: 3000,
         });
         
@@ -103,10 +117,21 @@ export const StudentForm = ({ isOpen, onClose, onSuccess, initialData, mode }: S
       }
       
     } catch (error: any) {
-      console.error("Error creating/updating student:", error);
+      console.error("Error in handleSubmit:", error);
+      
+      let errorMessage = "Gagal menyimpan data siswa";
+      
+      if (error.message?.includes("permission denied")) {
+        errorMessage = "Anda tidak memiliki izin untuk melakukan operasi ini";
+      } else if (error.message?.includes("network")) {
+        errorMessage = "Masalah koneksi jaringan. Silakan coba lagi.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Terjadi kesalahan",
-        description: error.message || "Gagal menyimpan data siswa",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -121,7 +146,7 @@ export const StudentForm = ({ isOpen, onClose, onSuccess, initialData, mode }: S
           <DialogTitle>{mode === 'create' ? 'Tambah User Siswa Baru' : 'Edit Data Siswa'}</DialogTitle>
           <DialogDescription>
             {mode === 'create' 
-              ? 'Fitur ini memerlukan konfigurasi admin tambahan. Hubungi administrator sistem.'
+              ? 'Untuk keamanan, siswa perlu mendaftar sendiri melalui halaman login.'
               : 'Perbarui data siswa yang sudah ada.'}
           </DialogDescription>
         </DialogHeader>
@@ -195,10 +220,12 @@ export const StudentForm = ({ isOpen, onClose, onSuccess, initialData, mode }: S
           </div>
           
           {mode === 'create' && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-              <p className="text-sm text-yellow-800">
-                <strong>Catatan:</strong> Pembuatan user siswa baru memerlukan konfigurasi admin tambahan. 
-                Silakan hubungi administrator sistem untuk menambahkan siswa baru ke database.
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-sm text-blue-800">
+                <strong>Cara menambah siswa baru:</strong>
+                <br />1. Minta siswa untuk mendaftar di halaman login
+                <br />2. Setelah mendaftar, gunakan form edit untuk melengkapi data
+                <br />3. Data akan tersimpan dengan aman di sistem
               </p>
             </div>
           )}
@@ -210,7 +237,7 @@ export const StudentForm = ({ isOpen, onClose, onSuccess, initialData, mode }: S
           </Button>
           <Button onClick={handleSubmit} disabled={loading || mode === 'create'}>
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {mode === 'create' ? 'Fitur Tidak Tersedia' : 'Simpan Perubahan'}
+            {mode === 'create' ? 'Lihat Petunjuk' : 'Simpan Perubahan'}
           </Button>
         </DialogFooter>
       </DialogContent>

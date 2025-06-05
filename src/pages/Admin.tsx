@@ -1,115 +1,64 @@
 
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Layout } from "@/components/Layout";
-import { useToast } from "@/hooks/use-toast";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import UserManagement from "@/components/Admin/UserManagement";
-import BehaviorManagement from "@/components/Admin/BehaviorManagement";
-import ConsultationManagement from "@/components/Admin/ConsultationManagement";
-import LetterManagement from "@/components/Admin/LetterManagement";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/providers/AuthProvider";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UserManagement } from "@/components/Admin/UserManagement";
+import { BehaviorManagement } from "@/components/Admin/BehaviorManagement";
+import { ConsultationManagement } from "@/components/Admin/ConsultationManagement";
+import { LetterManagement } from "@/components/Admin/LetterManagement";
+import { CreateAdminUser } from "@/components/Admin/CreateAdminUser";
 import { Helmet } from "react-helmet-async";
 
 const Admin = () => {
-  const { toast } = useToast();
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    const checkAdminStatus = async () => {
-      try {
-        if (!user) {
-          navigate("/login");
-          return;
-        }
-
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', user.id)
-          .single();
-          
-        if (error) throw error;
-        
-        if (data.role !== 'admin' && data.role !== 'counselor') {
-          toast({
-            title: "Akses ditolak",
-            description: "Anda tidak memiliki akses ke halaman admin",
-            variant: "destructive"
-          });
-          navigate("/");
-          return;
-        }
-        
-        setIsAdmin(true);
-      } catch (error: any) {
-        console.error("Error checking admin status:", error);
-        toast({
-          title: "Error",
-          description: "Terjadi kesalahan saat memeriksa status admin",
-          variant: "destructive"
-        });
-        navigate("/");
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    checkAdminStatus();
-  }, [navigate, toast, user]);
-  
-  if (loading) {
-    return (
+  return (
+    <>
+      <Helmet>
+        <title>Admin Panel - BK Connect</title>
+        <link rel="icon" href="https://sman1lumbang.sch.id/wp-content/uploads/2022/12/logo-smanilum-60mm.png" type="image/png" />
+      </Helmet>
       <Layout>
-        <div className="flex justify-center items-center min-h-screen">
-          <div className="animate-spin h-12 w-12 rounded-full border-t-2 border-b-2 border-gray-900"></div>
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-2xl font-bold">Admin Panel</h1>
+            <p className="text-muted-foreground">
+              Kelola sistem BK Connect
+            </p>
+          </div>
+
+          <Tabs defaultValue="users" className="w-full">
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="users">Manajemen User</TabsTrigger>
+              <TabsTrigger value="create-admin">Buat Admin</TabsTrigger>
+              <TabsTrigger value="behavior">Data Perilaku</TabsTrigger>
+              <TabsTrigger value="consultation">Konsultasi</TabsTrigger>
+              <TabsTrigger value="letters">Surat</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="users" className="space-y-4">
+              <UserManagement />
+            </TabsContent>
+            
+            <TabsContent value="create-admin" className="space-y-4">
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Buat User Administrator Baru</h2>
+                <CreateAdminUser />
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="behavior" className="space-y-4">
+              <BehaviorManagement />
+            </TabsContent>
+            
+            <TabsContent value="consultation" className="space-y-4">
+              <ConsultationManagement />
+            </TabsContent>
+            
+            <TabsContent value="letters" className="space-y-4">
+              <LetterManagement />
+            </TabsContent>
+          </Tabs>
         </div>
       </Layout>
-    );
-  }
-  
-  if (!isAdmin) {
-    return null; // Redirect is handled in the useEffect
-  }
-  
-  return (
-    <Layout>
-      <Helmet>
-        <title>Admin Dashboard - BK Connect</title>
-      </Helmet>
-      <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
-        
-        <Tabs defaultValue="users" className="w-full">
-          <TabsList className="grid grid-cols-4 mb-8">
-            <TabsTrigger value="users">Manajemen User</TabsTrigger>
-            <TabsTrigger value="behaviors">Manajemen Perilaku</TabsTrigger>
-            <TabsTrigger value="consultations">Manajemen Konsultasi</TabsTrigger>
-            <TabsTrigger value="letters">Manajemen Surat</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="users">
-            <UserManagement />
-          </TabsContent>
-          
-          <TabsContent value="behaviors">
-            <BehaviorManagement />
-          </TabsContent>
-          
-          <TabsContent value="consultations">
-            <ConsultationManagement />
-          </TabsContent>
-          
-          <TabsContent value="letters">
-            <LetterManagement />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </Layout>
+    </>
   );
 };
 

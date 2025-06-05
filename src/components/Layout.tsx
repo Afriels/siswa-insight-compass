@@ -25,7 +25,9 @@ import {
   User, 
   MessageSquare,
   LogOut,
-  TestTube
+  TestTube,
+  Calendar,
+  Settings
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -75,6 +77,25 @@ export function Layout({ children }: LayoutProps) {
       title: "Konsultasi",
       icon: MessageSquare,
       path: "/consultation"
+    },
+    {
+      title: "Jadwal",
+      icon: Calendar,
+      path: "/schedule"
+    },
+    {
+      title: "Tes Psikologi",
+      icon: TestTube,
+      path: "/psychology-test"
+    }
+  ];
+
+  // Additional menu items for admin/counselor
+  const adminMenuItems = [
+    {
+      title: "Admin Panel",
+      icon: Settings,
+      path: "/admin"
     }
   ];
 
@@ -129,10 +150,15 @@ export function Layout({ children }: LayoutProps) {
     return nameParts[0][0].toUpperCase();
   };
 
+  const allMenuItems = [
+    ...menuItems,
+    ...(userProfile?.role === 'admin' || userProfile?.role === 'counselor' ? adminMenuItems : [])
+  ];
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
-        <AppSidebar location={location} menuItems={menuItems} />
+        <AppSidebar location={location} menuItems={allMenuItems} />
         <div className="flex-1 flex flex-col">
           <div className="p-4 flex items-center justify-between border-b bg-white">
             <div className="flex items-center">
