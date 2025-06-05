@@ -1,10 +1,10 @@
 
 import { Layout } from "@/components/Layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserManagement } from "@/components/Admin/UserManagement";
-import { BehaviorManagement } from "@/components/Admin/BehaviorManagement";
-import { ConsultationManagement } from "@/components/Admin/ConsultationManagement";
-import { LetterManagement } from "@/components/Admin/LetterManagement";
+import UserManagement from "@/components/Admin/UserManagement";
+import BehaviorManagement from "@/components/Admin/BehaviorManagement";
+import ConsultationManagement from "@/components/Admin/ConsultationManagement";
+import LetterManagement from "@/components/Admin/LetterManagement";
 import { CreateAdminUser } from "@/components/Admin/CreateAdminUser";
 import { Helmet } from "react-helmet-async";
 
