@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,13 +12,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/providers/AuthProvider";
-import { CounselingSchedule } from "@/types/scheduling";
+import { Database } from "@/integrations/supabase/types";
+
+type ScheduleData = Database['public']['Tables']['counseling_schedules']['Row'];
 
 interface ScheduleFormProps {
   isOpen: boolean;
   onClose: () => void;
   selectedDate?: Date;
-  scheduleToEdit?: CounselingSchedule;
+  scheduleToEdit?: ScheduleData;
 }
 
 const formSchema = z.object({
