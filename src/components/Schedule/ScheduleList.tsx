@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { 
@@ -24,18 +23,9 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, 
   AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { ScheduleForm } from "./ScheduleForm";
+import { Database } from "@/integrations/supabase/types";
 
-interface ScheduleData {
-  id: string;
-  title: string;
-  description: string;
-  scheduled_at: string;
-  location: string;
-  status: "pending" | "completed" | "cancelled";
-  student_id: string | null;
-  counselor_id: string | null;
-  created_at: string;
-}
+type ScheduleData = Database['public']['Tables']['counseling_schedules']['Row'];
 
 interface ScheduleListProps {
   selectedDate?: Date;
