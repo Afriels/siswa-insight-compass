@@ -24,7 +24,18 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, 
   AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { ScheduleForm } from "./ScheduleForm";
-import { CounselingSchedule } from "@/types/scheduling";
+
+interface ScheduleData {
+  id: string;
+  title: string;
+  description: string;
+  scheduled_at: string;
+  location: string;
+  status: "pending" | "completed" | "cancelled";
+  student_id: string | null;
+  counselor_id: string | null;
+  created_at: string;
+}
 
 interface ScheduleListProps {
   selectedDate?: Date;
@@ -32,9 +43,9 @@ interface ScheduleListProps {
 
 export function ScheduleList({ selectedDate }: ScheduleListProps) {
   const { toast } = useToast();
-  const [schedules, setSchedules] = useState<CounselingSchedule[]>([]);
+  const [schedules, setSchedules] = useState<ScheduleData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [editingSchedule, setEditingSchedule] = useState<CounselingSchedule | undefined>(undefined);
+  const [editingSchedule, setEditingSchedule] = useState<ScheduleData | undefined>(undefined);
   const [formattedDate, setFormattedDate] = useState<string>("");
 
   useEffect(() => {
@@ -55,11 +66,7 @@ export function ScheduleList({ selectedDate }: ScheduleListProps) {
       
       const { data, error } = await supabase
         .from("counseling_schedules")
-        .select(`
-          *,
-          student:profiles!counseling_schedules_student_id_fkey(full_name),
-          counselor:profiles!counseling_schedules_counselor_id_fkey(full_name)
-        `)
+        .select("*")
         .gte('scheduled_at', `${dateString}T00:00:00`)
         .lt('scheduled_at', `${dateString}T23:59:59`)
         .order('scheduled_at', { ascending: true });
@@ -83,7 +90,7 @@ export function ScheduleList({ selectedDate }: ScheduleListProps) {
     }
   }
 
-  const handleEdit = (schedule: CounselingSchedule) => {
+  const handleEdit = (schedule: ScheduleData) => {
     setEditingSchedule(schedule);
   };
 
@@ -146,7 +153,6 @@ export function ScheduleList({ selectedDate }: ScheduleListProps) {
               <TableRow>
                 <TableHead>Waktu</TableHead>
                 <TableHead>Judul</TableHead>
-                <TableHead>Siswa</TableHead>
                 <TableHead>Lokasi</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Aksi</TableHead>
@@ -163,7 +169,6 @@ export function ScheduleList({ selectedDate }: ScheduleListProps) {
                     {format(new Date(schedule.scheduled_at), "HH:mm")}
                   </TableCell>
                   <TableCell>{schedule.title}</TableCell>
-                  <TableCell>{schedule.student?.full_name || '-'}</TableCell>
                   <TableCell>{schedule.location}</TableCell>
                   <TableCell>{getStatusBadge(schedule.status)}</TableCell>
                   <TableCell className="text-right">

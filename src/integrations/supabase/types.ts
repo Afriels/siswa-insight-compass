@@ -158,6 +158,47 @@ export type Database = {
         }
         Relationships: []
       }
+      forum_topics: {
+        Row: {
+          category: string
+          created_at: string | null
+          created_by: string | null
+          description: string
+          id: string
+          status: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string | null
+          created_by?: string | null
+          description: string
+          id?: string
+          status?: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string
+          id?: string
+          status?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_topics_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null

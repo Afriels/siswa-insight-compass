@@ -32,7 +32,6 @@ export const CreateTopicDialog = ({ onTopicCreated }: CreateTopicDialogProps) =>
 
     setIsLoading(true);
     try {
-      // Create a simple forum topics table entry
       const { error } = await supabase
         .from('forum_topics')
         .insert({
@@ -57,7 +56,7 @@ export const CreateTopicDialog = ({ onTopicCreated }: CreateTopicDialogProps) =>
       console.error("Error creating topic:", error);
       toast({
         title: "Gagal membuat topik",
-        description: "Fitur forum akan segera tersedia. Silakan coba lagi nanti.",
+        description: error.message || "Terjadi kesalahan saat membuat topik",
         variant: "destructive",
       });
     } finally {
