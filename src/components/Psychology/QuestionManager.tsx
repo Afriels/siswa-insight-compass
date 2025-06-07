@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Plus, Edit, Trash2, MoveUp, MoveDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { TestQuestionTemplates } from "./TestQuestionTemplates";
 
 interface Question {
   id: string;
@@ -50,7 +50,6 @@ export const QuestionManager = ({ test, onBack }: QuestionManagerProps) => {
 
       if (error) throw error;
 
-      // Convert the Json types to proper types
       const convertedQuestions: Question[] = (data || []).map(q => ({
         id: q.id,
         question_text: q.question_text,
@@ -104,14 +103,12 @@ export const QuestionManager = ({ test, onBack }: QuestionManagerProps) => {
 
   const handleSaveQuestion = async (questionData: Partial<Question>) => {
     try {
-      // Ensure scoring_config has category
       const scoringConfig = {
         category: 'general',
         ...questionData.scoring_config
       };
 
       if (editingQuestion?.id) {
-        // Update existing question
         const { error } = await supabase
           .from('psychology_test_questions')
           .update({
@@ -130,7 +127,6 @@ export const QuestionManager = ({ test, onBack }: QuestionManagerProps) => {
           description: "Pertanyaan berhasil diperbarui",
         });
       } else {
-        // Create new question
         const { error } = await supabase
           .from('psychology_test_questions')
           .insert({
@@ -200,7 +196,6 @@ export const QuestionManager = ({ test, onBack }: QuestionManagerProps) => {
     const targetQuestion = questions[targetIndex];
 
     try {
-      // Swap order indices
       await supabase
         .from('psychology_test_questions')
         .update({ order_index: targetQuestion.order_index })
@@ -249,6 +244,14 @@ export const QuestionManager = ({ test, onBack }: QuestionManagerProps) => {
           Tambah Pertanyaan
         </Button>
       </div>
+
+      {questions.length === 0 && (
+        <TestQuestionTemplates 
+          testId={test.id}
+          testCategory={test.category}
+          onQuestionsAdded={fetchQuestions}
+        />
+      )}
 
       <div className="space-y-4">
         {questions.map((question, index) => (
@@ -309,7 +312,7 @@ export const QuestionManager = ({ test, onBack }: QuestionManagerProps) => {
         <div className="text-center py-12">
           <h3 className="text-lg font-semibold mb-2">Belum Ada Pertanyaan</h3>
           <p className="text-muted-foreground mb-4">
-            Mulai dengan menambahkan pertanyaan pertama untuk tes ini.
+            Mulai dengan menambahkan pertanyaan pertama untuk tes ini atau gunakan template.
           </p>
           <Button onClick={handleCreateQuestion}>
             <Plus className="h-4 w-4 mr-2" />

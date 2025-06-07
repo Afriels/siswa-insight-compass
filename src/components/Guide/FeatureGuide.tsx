@@ -16,7 +16,9 @@ import {
   TestTube,
   Settings,
   BookOpen,
-  MessageCircle
+  MessageCircle,
+  CheckCircle,
+  Lightbulb
 } from "lucide-react";
 
 const featureGuides = {
@@ -24,6 +26,7 @@ const featureGuides = {
     title: "Dashboard",
     icon: <BookOpen className="h-5 w-5" />,
     description: "Ringkasan aktivitas dan statistik BK",
+    color: "bg-blue-500",
     steps: [
       "Lihat statistik siswa, konsultasi, dan perilaku terkini",
       "Monitor aktivitas terakhir di sistem",
@@ -40,6 +43,7 @@ const featureGuides = {
     title: "Data Siswa",
     icon: <Users className="h-5 w-5" />,
     description: "Kelola database siswa dan profil mereka",
+    color: "bg-green-500",
     steps: [
       "Tambah siswa baru melalui form atau import Excel",
       "Edit informasi siswa yang sudah ada",
@@ -57,6 +61,7 @@ const featureGuides = {
     title: "Sosiogram",
     icon: <ChartBar className="h-5 w-5" />,
     description: "Analisis hubungan sosial antar siswa",
+    color: "bg-purple-500",
     steps: [
       "Pilih kelas untuk analisis sosiogram",
       "Input data pilihan siswa dalam kelompok",
@@ -74,6 +79,7 @@ const featureGuides = {
     title: "Pencarian Masalah",
     icon: <Search className="h-5 w-5" />,
     description: "Identifikasi dan lacak masalah siswa",
+    color: "bg-orange-500",
     steps: [
       "Input gejala atau perilaku yang diamati",
       "Sistem akan menampilkan kemungkinan masalah",
@@ -91,6 +97,7 @@ const featureGuides = {
     title: "Pendataan Perilaku",
     icon: <Database className="h-5 w-5" />,
     description: "Catat dan pantau perilaku siswa",
+    color: "bg-red-500",
     steps: [
       "Pilih siswa yang akan dicatat perilakunya",
       "Tentukan jenis perilaku (positif/negatif)",
@@ -108,6 +115,7 @@ const featureGuides = {
     title: "Konsultasi",
     icon: <MessageSquare className="h-5 w-5" />,
     description: "Layanan konsultasi online dengan siswa",
+    color: "bg-teal-500",
     steps: [
       "Siswa membuat permintaan konsultasi baru",
       "Guru BK menerima dan merespons permintaan",
@@ -125,6 +133,7 @@ const featureGuides = {
     title: "Jadwal Konseling",
     icon: <Calendar className="h-5 w-5" />,
     description: "Atur jadwal konseling dengan siswa dan orang tua",
+    color: "bg-indigo-500",
     steps: [
       "Buat jadwal konseling baru",
       "Pilih siswa dan tentukan waktu",
@@ -142,6 +151,7 @@ const featureGuides = {
     title: "Tes Psikologi",
     icon: <TestTube className="h-5 w-5" />,
     description: "Kelola tes psikologi untuk asesmen siswa",
+    color: "bg-pink-500",
     steps: [
       "Pilih template tes yang sesuai",
       "Assign tes kepada siswa",
@@ -159,6 +169,7 @@ const featureGuides = {
     title: "WhatsApp Sender",
     icon: <MessageCircle className="h-5 w-5" />,
     description: "Kirim pesan WhatsApp ke orang tua/wali siswa",
+    color: "bg-green-600",
     steps: [
       "Pilih template pesan yang sesuai",
       "Tambahkan kontak penerima",
@@ -182,79 +193,101 @@ export const FeatureGuide = () => {
       <DialogTrigger asChild>
         <Button 
           variant="outline" 
-          className="fixed bottom-6 right-6 rounded-full w-14 h-14 bg-counseling-blue text-white hover:bg-blue-600 shadow-lg animate-bounce z-50"
+          className="fixed bottom-6 right-6 rounded-full w-16 h-16 bg-gradient-to-r from-counseling-blue to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110 z-50 border-2 border-white"
         >
-          <HelpCircle className="h-6 w-6" />
+          <HelpCircle className="h-7 w-7" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto animate-slideInUp">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl">
-            <BookOpen className="h-6 w-6" />
+      <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto animate-slideInUp bg-gradient-to-br from-blue-50 to-indigo-50">
+        <DialogHeader className="border-b pb-4">
+          <DialogTitle className="flex items-center gap-3 text-2xl font-bold bg-gradient-to-r from-counseling-blue to-indigo-600 bg-clip-text text-transparent">
+            <div className="p-2 rounded-lg bg-counseling-blue text-white">
+              <BookOpen className="h-6 w-6" />
+            </div>
             Panduan Fitur BK Connect
           </DialogTitle>
-          <DialogDescription>
-            Pelajari cara menggunakan setiap fitur dalam aplikasi BK Connect
+          <DialogDescription className="text-lg text-gray-600">
+            Pelajari cara menggunakan setiap fitur dalam aplikasi BK Connect dengan mudah dan efektif
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs value={selectedFeature} onValueChange={setSelectedFeature} className="w-full">
-          <TabsList className="grid grid-cols-3 lg:grid-cols-5 mb-6">
+        <Tabs value={selectedFeature} onValueChange={setSelectedFeature} className="w-full mt-6">
+          <TabsList className="grid grid-cols-3 lg:grid-cols-5 mb-8 bg-white rounded-xl p-2 shadow-lg">
             {Object.entries(featureGuides).map(([key, feature]) => (
               <TabsTrigger 
                 key={key} 
                 value={key} 
-                className="text-xs transition-all duration-200 hover:bg-blue-50"
+                className="text-xs transition-all duration-300 hover:bg-blue-50 data-[state=active]:bg-counseling-blue data-[state=active]:text-white rounded-lg"
               >
-                <div className="flex flex-col items-center gap-1">
-                  {feature.icon}
-                  <span className="hidden sm:inline">{feature.title}</span>
+                <div className="flex flex-col items-center gap-2 p-2">
+                  <div className={`p-2 rounded-lg ${feature.color} text-white`}>
+                    {feature.icon}
+                  </div>
+                  <span className="hidden sm:inline font-medium">{feature.title}</span>
                 </div>
               </TabsTrigger>
             ))}
           </TabsList>
 
           {Object.entries(featureGuides).map(([key, feature]) => (
-            <TabsContent key={key} value={key} className="space-y-4 animate-fadeIn">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    {feature.icon}
+            <TabsContent key={key} value={key} className="space-y-6 animate-fadeIn">
+              <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+                <CardHeader className="bg-gradient-to-r from-counseling-blue to-indigo-600 text-white rounded-t-lg">
+                  <CardTitle className="flex items-center gap-3 text-xl">
+                    <div className="p-2 rounded-lg bg-white/20">
+                      {feature.icon}
+                    </div>
                     {feature.title}
                   </CardTitle>
-                  <CardDescription>{feature.description}</CardDescription>
+                  <CardDescription className="text-blue-100 text-base">
+                    {feature.description}
+                  </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <h4 className="font-semibold text-sm mb-3">Langkah-langkah Penggunaan:</h4>
-                    <ol className="space-y-2">
-                      {feature.steps.map((step, index) => (
-                        <li key={index} className="flex gap-3">
-                          <Badge variant="outline" className="w-6 h-6 rounded-full flex items-center justify-center text-xs">
-                            {index + 1}
-                          </Badge>
-                          <span className="text-sm">{step}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
+                <CardContent className="p-6 space-y-6">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 mb-4">
+                        <CheckCircle className="h-5 w-5 text-green-500" />
+                        <h4 className="font-bold text-lg text-gray-800">Langkah-langkah Penggunaan</h4>
+                      </div>
+                      <div className="space-y-3">
+                        {feature.steps.map((step, index) => (
+                          <div key={index} className="flex gap-4 p-3 rounded-lg bg-blue-50 border-l-4 border-counseling-blue">
+                            <Badge variant="outline" className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-counseling-blue text-white border-counseling-blue">
+                              {index + 1}
+                            </Badge>
+                            <span className="text-sm text-gray-700 leading-relaxed">{step}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
-                  <div>
-                    <h4 className="font-semibold text-sm mb-3">Tips & Saran:</h4>
-                    <ul className="space-y-2">
-                      {feature.tips.map((tip, index) => (
-                        <li key={index} className="flex gap-2 text-sm">
-                          <span className="text-yellow-500">💡</span>
-                          {tip}
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Lightbulb className="h-5 w-5 text-yellow-500" />
+                        <h4 className="font-bold text-lg text-gray-800">Tips & Saran</h4>
+                      </div>
+                      <div className="space-y-3">
+                        {feature.tips.map((tip, index) => (
+                          <div key={index} className="flex gap-3 p-3 rounded-lg bg-yellow-50 border-l-4 border-yellow-400">
+                            <span className="text-yellow-500 text-lg">💡</span>
+                            <span className="text-sm text-gray-700 leading-relaxed">{tip}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             </TabsContent>
           ))}
         </Tabs>
+
+        <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
+          <p className="text-sm text-center text-gray-600">
+            <strong>💬 Butuh bantuan lebih lanjut?</strong> Hubungi administrator sistem atau gunakan fitur konsultasi online.
+          </p>
+        </div>
       </DialogContent>
     </Dialog>
   );
