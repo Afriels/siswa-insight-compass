@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -70,6 +69,13 @@ export default {
 					lightBlue: '#93c5fd',
 					lightGreen: '#a7f3d0',
 					lightPurple: '#c4b5fd'
+				},
+				theme: {
+					'chocolate-cosmos': 'hsl(var(--dark-chocolate-cosmos))',
+					'rosewood': 'hsl(var(--dark-rosewood))',
+					'tyrian-purple': 'hsl(var(--dark-tyrian-purple))',
+					'palatinate': 'hsl(var(--dark-palatinate))',
+					'barossa': 'hsl(var(--dark-barossa))'
 				}
 			},
 			borderRadius: {
