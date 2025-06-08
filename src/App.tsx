@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -8,6 +9,26 @@ import { AuthProvider } from "@/providers/AuthProvider";
 import { ProtectedRoute } from "@/components/Auth/ProtectedRoute";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { ThemeProvider } from "@/hooks/use-theme";
+
+// Import all page components
+import ForumLanding from "@/pages/ForumLanding";
+import Auth from "@/pages/Auth";
+import Index from "@/pages/Index";
+import Students from "@/pages/Students";
+import Sociogram from "@/pages/Sociogram";
+import Issues from "@/pages/Issues";
+import Behavior from "@/pages/Behavior";
+import BehaviorHistoryPage from "@/pages/BehaviorHistory";
+import Profile from "@/pages/Profile";
+import Consultation from "@/pages/Consultation";
+import ConsultationNew from "@/pages/ConsultationNew";
+import ConsultationDetailPage from "@/pages/ConsultationDetail";
+import Schedule from "@/pages/Schedule";
+import Forum from "@/pages/Forum";
+import PsychologyTestPage from "@/pages/PsychologyTest";
+import AIAssistantPage from "@/pages/AIAssistant";
+import Admin from "@/pages/Admin";
+import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient({
   defaultOptions: {
