@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -27,7 +26,8 @@ import {
   LogOut,
   TestTube,
   Calendar,
-  Settings
+  Settings,
+  Bot
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -87,6 +87,11 @@ export function Layout({ children }: LayoutProps) {
       title: "Tes Psikologi",
       icon: TestTube,
       path: "/psychology-test"
+    },
+    {
+      title: "Asisten AI",
+      icon: Bot,
+      path: "/ai-assistant"
     }
   ];
 

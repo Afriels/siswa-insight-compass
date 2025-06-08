@@ -1,4 +1,3 @@
-
 import { createContext, useState, useEffect, useContext, ReactNode, useCallback } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,7 +11,7 @@ type AuthContextType = {
   resetInactivityTimer: () => void;
 };
 
-const AUTH_TIMEOUT = 5 * 60 * 1000; // 5 minutes in milliseconds
+const AUTH_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -29,7 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Only set new timer if user is logged in
     if (user) {
       const timer = setTimeout(async () => {
-        console.log("User inactive for 5 minutes, logging out");
+        console.log("User inactive for 10 minutes, logging out");
         await signOut();
       }, AUTH_TIMEOUT);
       

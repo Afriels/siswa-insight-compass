@@ -25,6 +25,7 @@ import Schedule from "./pages/Schedule";
 import Forum from "./pages/Forum";
 import PsychologyTestPage from "./pages/PsychologyTest";
 import ForumLanding from "./pages/ForumLanding";
+import AIAssistantPage from "./pages/AIAssistant";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -67,6 +68,7 @@ const App = () => (
             <Route path="/schedule" element={<ProtectedRoute><Schedule /></ProtectedRoute>} />
             <Route path="/forum" element={<ProtectedRoute><Forum /></ProtectedRoute>} />
             <Route path="/psychology-test" element={<ProtectedRoute><PsychologyTestPage /></ProtectedRoute>} />
+            <Route path="/ai-assistant" element={<ProtectedRoute><AIAssistantPage /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
             
             {/* Catch-all route */}
