@@ -4,6 +4,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
 const perplexityApiKey = Deno.env.get('PERPLEXITY_API_KEY');
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -19,7 +20,7 @@ serve(async (req) => {
   }
 
   try {
-    const { message, adminMode, internetSearch, dbAccess, userRole, userId } = await req.json();
+    const { message, adminMode, internetSearch, dbAccess, userRole, userId, aiProvider = 'openai' } = await req.json();
 
     let response = '';
     let searchResults = [];
@@ -113,9 +114,8 @@ serve(async (req) => {
       }
     }
 
-    // Generate AI response with OpenAI
-    if (openAIApiKey) {
-      const systemPrompt = `You are an enhanced AI assistant for BK Connect, a school counseling application. 
+    // Generate AI response with selected provider
+    const systemPrompt = `You are an enhanced AI assistant for BK Connect, a school counseling application. 
       
 Context:
 - User Role: ${userRole}
@@ -133,37 +133,76 @@ ${dbAccess ? '- Direct database access for queries and updates' : ''}
 Respond in Indonesian. Be helpful, professional, and provide actionable advice for school counseling scenarios.
 If you have search results or database information, incorporate them naturally into your response.`;
 
-      const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openAIApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: message }
-          ],
-          temperature: 0.7,
-          max_tokens: 1000,
-        }),
-      });
+    if (aiProvider === 'gemini' && geminiApiKey) {
+      // Use Gemini API
+      try {
+        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiApiKey}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: `${systemPrompt}\n\nUser message: ${message}`
+              }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 1000,
+            }
+          }),
+        });
 
-      if (aiResponse.ok) {
-        const aiData = await aiResponse.json();
-        response = aiData.choices[0]?.message?.content || 'Maaf, tidak dapat memproses permintaan Anda saat ini.';
-      } else {
-        response = 'Terjadi kesalahan saat menghubungi AI. Silakan coba lagi.';
+        if (geminiResponse.ok) {
+          const geminiData = await geminiResponse.json();
+          response = geminiData.candidates[0]?.content?.parts[0]?.text || 'Maaf, tidak dapat memproses permintaan Anda saat ini.';
+        } else {
+          response = 'Terjadi kesalahan saat menghubungi Gemini AI. Silakan coba lagi.';
+        }
+      } catch (error) {
+        console.error('Gemini API error:', error);
+        response = 'Terjadi kesalahan saat menghubungi Gemini AI. Silakan coba lagi.';
+      }
+    } else if (openAIApiKey) {
+      // Use OpenAI API
+      try {
+        const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${openAIApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'gpt-4o-mini',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: message }
+            ],
+            temperature: 0.7,
+            max_tokens: 1000,
+          }),
+        });
+
+        if (aiResponse.ok) {
+          const aiData = await aiResponse.json();
+          response = aiData.choices[0]?.message?.content || 'Maaf, tidak dapat memproses permintaan Anda saat ini.';
+        } else {
+          response = 'Terjadi kesalahan saat menghubungi OpenAI. Silakan coba lagi.';
+        }
+      } catch (error) {
+        console.error('OpenAI API error:', error);
+        response = 'Terjadi kesalahan saat menghubungi OpenAI. Silakan coba lagi.';
       }
     } else {
-      response = 'OpenAI API key tidak ditemukan. Menggunakan respons default.';
+      response = 'API key tidak ditemukan. Menggunakan respons default.';
     }
 
     return new Response(JSON.stringify({ 
       response, 
       searchResults, 
-      dbOperations 
+      dbOperations,
+      aiProvider: aiProvider 
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

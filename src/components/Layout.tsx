@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -48,7 +49,32 @@ export function Layout({ children }: LayoutProps) {
     role: string;
   } | null>(null);
 
-  const menuItems = [
+  // Menu items for students (simplified)
+  const studentMenuItems = [
+    {
+      title: "Dashboard",
+      icon: Home,
+      path: "/dashboard"
+    },
+    {
+      title: "Konsultasi",
+      icon: MessageSquare,
+      path: "/consultation"
+    },
+    {
+      title: "Jadwal",
+      icon: Calendar,
+      path: "/schedule"
+    },
+    {
+      title: "Asisten AI",
+      icon: Bot,
+      path: "/ai-assistant"
+    }
+  ];
+
+  // Full menu items for admin/counselor
+  const adminMenuItems = [
     {
       title: "Dashboard",
       icon: Home,
@@ -93,11 +119,7 @@ export function Layout({ children }: LayoutProps) {
       title: "Asisten AI",
       icon: Bot,
       path: "/ai-assistant"
-    }
-  ];
-
-  // Additional menu items for admin/counselor
-  const adminMenuItems = [
+    },
     {
       title: "Admin Panel",
       icon: Settings,
@@ -156,15 +178,13 @@ export function Layout({ children }: LayoutProps) {
     return nameParts[0][0].toUpperCase();
   };
 
-  const allMenuItems = [
-    ...menuItems,
-    ...(userProfile?.role === 'admin' || userProfile?.role === 'counselor' ? adminMenuItems : [])
-  ];
+  // Choose menu items based on user role
+  const menuItems = userProfile?.role === 'student' ? studentMenuItems : adminMenuItems;
 
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
-        <AppSidebar location={location} menuItems={allMenuItems} />
+        <AppSidebar location={location} menuItems={menuItems} userRole={userProfile?.role} />
         <div className="flex-1 flex flex-col">
           <div className="p-4 flex items-center justify-between border-b bg-white">
             <div className="flex items-center">
@@ -238,9 +258,10 @@ interface AppSidebarProps {
     icon: React.FC<any>;
     path: string;
   }>;
+  userRole?: string;
 }
 
-function AppSidebar({ location, menuItems }: AppSidebarProps) {
+function AppSidebar({ location, menuItems, userRole }: AppSidebarProps) {
   return (
     <Sidebar>
       <SidebarContent>
@@ -254,6 +275,9 @@ function AppSidebar({ location, menuItems }: AppSidebarProps) {
             </svg>
             BK Connect
           </h2>
+          {userRole === 'student' && (
+            <p className="text-sm text-muted-foreground mt-1">Portal Siswa</p>
+          )}
         </div>
         <SidebarGroup>
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
