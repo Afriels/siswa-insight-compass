@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -75,7 +76,12 @@ export default {
 					'rosewood': 'hsl(var(--dark-rosewood))',
 					'tyrian-purple': 'hsl(var(--dark-tyrian-purple))',
 					'palatinate': 'hsl(var(--dark-palatinate))',
-					'barossa': 'hsl(var(--dark-barossa))'
+					'barossa': 'hsl(var(--dark-barossa))',
+					'dark-green': 'hsl(var(--forest-dark-green))',
+					'brunswick-green': 'hsl(var(--forest-brunswick))',
+					'castleton-green': 'hsl(var(--forest-castleton))',
+					'gunmetal': 'hsl(var(--forest-gunmetal))',
+					'prussian-blue': 'hsl(var(--forest-prussian))'
 				}
 			},
 			borderRadius: {
