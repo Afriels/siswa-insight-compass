@@ -1,87 +1,73 @@
 
-import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { ProtectedRoute } from "@/components/Auth/ProtectedRoute";
-import { Helmet, HelmetProvider } from "react-helmet-async";
 import { ThemeProvider } from "@/hooks/use-theme";
+import { HelmetProvider } from "react-helmet-async";
 
-// Import all page components
-import ForumLanding from "@/pages/ForumLanding";
-import Auth from "@/pages/Auth";
-import Index from "@/pages/Index";
-import Students from "@/pages/Students";
-import Sociogram from "@/pages/Sociogram";
-import Issues from "@/pages/Issues";
-import Behavior from "@/pages/Behavior";
-import BehaviorHistoryPage from "@/pages/BehaviorHistory";
-import Profile from "@/pages/Profile";
-import Consultation from "@/pages/Consultation";
-import ConsultationNew from "@/pages/ConsultationNew";
-import ConsultationDetailPage from "@/pages/ConsultationDetail";
-import Schedule from "@/pages/Schedule";
-import Forum from "@/pages/Forum";
-import PsychologyTestPage from "@/pages/PsychologyTest";
-import AIAssistantPage from "@/pages/AIAssistant";
-import Admin from "@/pages/Admin";
-import NotFound from "@/pages/NotFound";
+// Pages
+import Index from "./pages/Index";
+import Auth from "./pages/Auth";
+import Students from "./pages/Students";
+import Consultation from "./pages/Consultation";
+import ConsultationNew from "./pages/ConsultationNew";
+import ConsultationDetail from "./pages/ConsultationDetail";
+import Behavior from "./pages/Behavior";
+import BehaviorHistory from "./pages/BehaviorHistory";
+import Issues from "./pages/Issues";
+import Sociogram from "./pages/Sociogram";
+import PsychologyTest from "./pages/PsychologyTest";
+import Forum from "./pages/Forum";
+import ForumDetail from "./pages/ForumDetail";
+import Schedule from "./pages/Schedule";
+import Admin from "./pages/Admin";
+import Profile from "./pages/Profile";
+import AIAssistant from "./pages/AIAssistant";
+import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes caching
-    },
-  },
-});
+const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="light" storageKey="bk-connect-theme">
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <AuthProvider>
-          <HelmetProvider>
-            <Helmet>
-              <title>BK Connect - Aplikasi Bimbingan Konseling Digital</title>
-              <link rel="icon" href="https://sman1lumbang.sch.id/wp-content/uploads/2022/12/logo-smanilum-60mm.png" type="image/png" />
-            </Helmet>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<ForumLanding />} />
-              <Route path="/login" element={<Auth />} />
-              
-              {/* Protected Routes */}
-              <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-              <Route path="/students" element={<ProtectedRoute><Students /></ProtectedRoute>} />
-              <Route path="/sociogram" element={<ProtectedRoute><Sociogram /></ProtectedRoute>} />
-              <Route path="/issues" element={<ProtectedRoute><Issues /></ProtectedRoute>} />
-              <Route path="/behavior" element={<ProtectedRoute><Behavior /></ProtectedRoute>} />
-              <Route path="/behavior/history" element={<ProtectedRoute><BehaviorHistoryPage /></ProtectedRoute>} />
-              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-              <Route path="/consultation" element={<ProtectedRoute><Consultation /></ProtectedRoute>} />
-              <Route path="/consultation/new" element={<ProtectedRoute><ConsultationNew /></ProtectedRoute>} />
-              <Route path="/consultation/:id" element={<ProtectedRoute><ConsultationDetailPage /></ProtectedRoute>} />
-              <Route path="/schedule" element={<ProtectedRoute><Schedule /></ProtectedRoute>} />
-              <Route path="/forum" element={<ProtectedRoute><Forum /></ProtectedRoute>} />
-              <Route path="/psychology-test" element={<ProtectedRoute><PsychologyTestPage /></ProtectedRoute>} />
-              <Route path="/ai-assistant" element={<ProtectedRoute><AIAssistantPage /></ProtectedRoute>} />
-              <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
-              
-              {/* Catch-all route */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </HelmetProvider>
-        </AuthProvider>
-      </TooltipProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <AuthProvider>
+                <Routes>
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+                  <Route path="/students" element={<ProtectedRoute><Students /></ProtectedRoute>} />
+                  <Route path="/consultation" element={<ProtectedRoute><Consultation /></ProtectedRoute>} />
+                  <Route path="/consultation/new" element={<ProtectedRoute><ConsultationNew /></ProtectedRoute>} />
+                  <Route path="/consultation/:id" element={<ProtectedRoute><ConsultationDetail /></ProtectedRoute>} />
+                  <Route path="/behavior" element={<ProtectedRoute><Behavior /></ProtectedRoute>} />
+                  <Route path="/behavior-history" element={<ProtectedRoute><BehaviorHistory /></ProtectedRoute>} />
+                  <Route path="/issues" element={<ProtectedRoute><Issues /></ProtectedRoute>} />
+                  <Route path="/sociogram" element={<ProtectedRoute><Sociogram /></ProtectedRoute>} />
+                  <Route path="/psychology-test" element={<ProtectedRoute><PsychologyTest /></ProtectedRoute>} />
+                  <Route path="/forum" element={<ProtectedRoute><Forum /></ProtectedRoute>} />
+                  <Route path="/forum/:id" element={<ProtectedRoute><ForumDetail /></ProtectedRoute>} />
+                  <Route path="/schedule" element={<ProtectedRoute><Schedule /></ProtectedRoute>} />
+                  <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+                  <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                  <Route path="/ai-assistant" element={<ProtectedRoute><AIAssistant /></ProtectedRoute>} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </AuthProvider>
+            </BrowserRouter>
+          </TooltipProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
+  );
+}
 
 export default App;

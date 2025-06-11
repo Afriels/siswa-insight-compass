@@ -23,6 +23,12 @@ interface Student {
     nis?: string;
     class?: string;
     gender?: string;
+    birth_date?: string;
+    birth_place?: string;
+    address?: string;
+    phone?: string;
+    parent_name?: string;
+    parent_phone?: string;
     social_score?: string;
   }
 }
@@ -97,6 +103,12 @@ export function StudentTable() {
       full_name: student.full_name || '',
       class: student.user_metadata?.class || '',
       gender: (student.user_metadata?.gender as any) || 'Laki-laki',
+      birth_date: student.user_metadata?.birth_date || '',
+      birth_place: student.user_metadata?.birth_place || '',
+      address: student.user_metadata?.address || '',
+      phone: student.user_metadata?.phone || '',
+      parent_name: student.user_metadata?.parent_name || '',
+      parent_phone: student.user_metadata?.parent_phone || '',
       social_score: (student.user_metadata?.social_score as any) || 'Sedang',
       email: student.username || '',
     });
@@ -113,7 +125,6 @@ export function StudentTable() {
     if (!studentToDelete) return;
     
     try {
-      // For now, we'll just show a message that admin functions are not available
       toast({
         title: "Fitur Tidak Tersedia",
         description: "Penghapusan user memerlukan konfigurasi admin yang belum tersedia. Hubungi administrator sistem.",
@@ -135,7 +146,6 @@ export function StudentTable() {
     if (!studentForPassword || !newPassword) return;
     
     try {
-      // For now, we'll just show a message that admin functions are not available
       toast({
         title: "Fitur Tidak Tersedia",
         description: "Reset password memerlukan konfigurasi admin yang belum tersedia. Hubungi administrator sistem.",
@@ -159,36 +169,32 @@ export function StudentTable() {
     try {
       setExporting(true);
       
-      // Transform data for export
       const exportData = filteredStudents.map(student => ({
         NIS: student.user_metadata?.nis || '',
         'Nama Lengkap': student.full_name || '',
         Kelas: student.user_metadata?.class || '',
         Gender: student.user_metadata?.gender || '',
+        'Tempat Lahir': student.user_metadata?.birth_place || '',
+        'Tanggal Lahir': student.user_metadata?.birth_date || '',
+        Alamat: student.user_metadata?.address || '',
+        'No. HP Siswa': student.user_metadata?.phone || '',
+        'Nama Orang Tua': student.user_metadata?.parent_name || '',
+        'No. HP Orang Tua': student.user_metadata?.parent_phone || '',
         'Skor Sosial': student.user_metadata?.social_score || '',
         Email: student.username || '',
         'Tanggal Dibuat': new Date(student.created_at).toLocaleDateString('id-ID')
       }));
       
-      // Create workbook and worksheet
       const workbook = XLSX.utils.book_new();
       const worksheet = XLSX.utils.json_to_sheet(exportData);
       
-      // Set column widths
       worksheet['!cols'] = [
-        { wch: 15 }, // NIS
-        { wch: 25 }, // Nama Lengkap
-        { wch: 15 }, // Kelas
-        { wch: 15 }, // Gender
-        { wch: 15 }, // Skor Sosial
-        { wch: 30 }, // Email
-        { wch: 15 }  // Tanggal Dibuat
+        { wch: 15 }, { wch: 25 }, { wch: 15 }, { wch: 15 }, { wch: 20 },
+        { wch: 15 }, { wch: 30 }, { wch: 15 }, { wch: 25 }, { wch: 15 },
+        { wch: 15 }, { wch: 30 }, { wch: 15 }
       ];
       
-      // Add worksheet to workbook
       XLSX.utils.book_append_sheet(workbook, worksheet, "Data Siswa");
-      
-      // Generate Excel file and trigger download
       XLSX.writeFile(workbook, `data-siswa-${new Date().toISOString().split('T')[0]}.xlsx`);
       
       toast({
@@ -427,15 +433,13 @@ export function StudentTable() {
         </div>
       </div>
       
-      {/* Info Box untuk Template */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <h3 className="text-sm font-medium text-blue-800 mb-2">Panduan Manajemen User Siswa:</h3>
         <ul className="text-xs text-blue-700 space-y-1">
-          <li>• Unduh template Excel terlebih dahulu menggunakan tombol "Download Template"</li>
-          <li>• Setiap siswa akan otomatis mendapat akun login dengan email dan password</li>
-          <li>• Password default: "siswa" + NIS (contoh: siswa12345678)</li>
-          <li>• Admin dapat mengubah password siswa melalui tombol "Reset Password"</li>
-          <li>• Email opsional, jika kosong akan dibuat otomatis berformat: NIS@student.sekolah.sch.id</li>
+          <li>• Form edit data siswa sekarang sudah lengkap dengan semua field yang diperlukan</li>
+          <li>• Interface sudah responsive untuk perangkat mobile</li>
+          <li>• Data tambahan siswa disimpan dalam user_metadata</li>
+          <li>• Sistem kelas otomatis terintegrasi dengan data siswa</li>
         </ul>
       </div>
       
@@ -507,7 +511,6 @@ export function StudentTable() {
         </div>
       </div>
       
-      {/* Student Form Dialog */}
       <StudentForm
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
