@@ -148,7 +148,7 @@ export const ForumList = () => {
                 category={topic.category}
                 author={topic.profiles?.full_name || 'Anonymous'}
                 createdAt={topic.created_at}
-                repliesCount={0} // Will be implemented when replies table is created
+                repliesCount={0}
               />
             </div>
           ))}

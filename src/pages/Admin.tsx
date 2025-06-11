@@ -4,9 +4,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UserManagement from "@/components/Admin/UserManagement";
 import ClassManagement from "@/components/Classes/ClassManagement";
 import { StudentTable } from "@/components/Students/StudentTable";
-import { BehaviorManagement } from "@/components/Admin/BehaviorManagement";
-import { ConsultationManagement } from "@/components/Admin/ConsultationManagement";
-import { LetterManagement } from "@/components/Admin/LetterManagement";
+import BehaviorManagement from "@/components/Admin/BehaviorManagement";
+import ConsultationManagement from "@/components/Admin/ConsultationManagement";
+import LetterManagement from "@/components/Admin/LetterManagement";
 import { TestManagement } from "@/components/Psychology/TestManagement";
 import { MultiWhatsAppSender } from "@/components/WhatsApp/MultiWhatsAppSender";
 
@@ -54,7 +54,10 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="psychology">
-            <TestManagement />
+            <TestManagement 
+              onBack={() => {}}
+              onTestsUpdated={() => {}}
+            />
           </TabsContent>
 
           <TabsContent value="letters">

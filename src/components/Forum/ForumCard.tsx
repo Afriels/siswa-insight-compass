@@ -5,34 +5,34 @@ import { MessageCircle, User } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { id } from "date-fns/locale";
 
-interface ForumPost {
-  id: string;
-  title: string;
-  content: string;
-  author: string;
-  category: string;
-  created_at: string;
-  replies_count: number;
-  views: number;
-}
-
 interface ForumCardProps {
-  post: ForumPost;
-  onClick: () => void;
+  title: string;
+  description: string;
+  category: string;
+  author: string;
+  createdAt: string;
+  repliesCount: number;
 }
 
-export const ForumCard = ({ post, onClick }: ForumCardProps) => {
+export const ForumCard = ({ 
+  title, 
+  description, 
+  category, 
+  author, 
+  createdAt, 
+  repliesCount 
+}: ForumCardProps) => {
   return (
-    <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={onClick}>
+    <Card className="hover:shadow-md transition-shadow cursor-pointer">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="flex-1">
-            <CardTitle className="text-lg mb-2">{post.title}</CardTitle>
+            <CardTitle className="text-lg mb-2">{title}</CardTitle>
             <CardDescription className="line-clamp-2">
-              {post.content}
+              {description}
             </CardDescription>
           </div>
-          <Badge variant="secondary">{post.category}</Badge>
+          <Badge variant="secondary">{category}</Badge>
         </div>
       </CardHeader>
       <CardContent>
@@ -40,16 +40,15 @@ export const ForumCard = ({ post, onClick }: ForumCardProps) => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1">
               <User className="h-4 w-4" />
-              {post.author}
+              {author}
             </div>
             <div className="flex items-center gap-1">
               <MessageCircle className="h-4 w-4" />
-              {post.replies_count} balasan
+              {repliesCount} balasan
             </div>
-            <span>{post.views} views</span>
           </div>
           <span>
-            {formatDistanceToNow(new Date(post.created_at), { 
+            {formatDistanceToNow(new Date(createdAt), { 
               addSuffix: true, 
               locale: id 
             })}

@@ -9,14 +9,13 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow 
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { 
   Dialog, DialogContent, DialogDescription, DialogFooter, 
   DialogHeader, DialogTitle, DialogTrigger 
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Users, Plus, PenLine, Trash2 } from "lucide-react";
+import { BookOpen, Users, Plus } from "lucide-react";
 
 interface ClassData {
   name: string;
@@ -30,30 +29,35 @@ const ClassManagement = () => {
   const [classes, setClasses] = useState<ClassData[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [newClass, setNewClass] = useState({
-    name: "",
-    grade: "",
-    major: ""
-  });
 
   const fetchClasses = async () => {
     try {
       setLoading(true);
       
-      // Get unique classes from student profiles
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('user_metadata')
-        .eq('role', 'student');
-        
-      if (error) throw error;
+      // Get users from auth.users and join with profiles to get class info
+      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
       
-      // Process class data
+      if (authError) {
+        console.error("Error fetching auth users:", authError);
+        // Fallback: try to get class info from profiles if available
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('role', 'student');
+          
+        if (profilesError) throw profilesError;
+        
+        // For now, show placeholder message since we don't have class data in profiles
+        setClasses([]);
+        return;
+      }
+      
+      // Process class data from auth users metadata
       const classMap = new Map<string, ClassData>();
       
-      data?.forEach(profile => {
-        if (profile.user_metadata?.class) {
-          const className = profile.user_metadata.class;
+      authUsers.users?.forEach(user => {
+        if (user.user_metadata?.class && user.user_metadata?.role === 'student') {
+          const className = user.user_metadata.class;
           
           if (classMap.has(className)) {
             const existing = classMap.get(className)!;
