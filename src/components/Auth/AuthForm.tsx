@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,6 @@ import { useToast } from "@/hooks/use-toast";
 
 export function AuthForm() {
   const { toast } = useToast();
-  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [loginForm, setLoginForm] = useState({
@@ -69,7 +67,6 @@ export function AuthForm() {
         description: "Anda telah berhasil masuk ke akun Anda",
       });
       
-      // Redirect will be handled by auth state change in App.tsx
     } catch (error: any) {
       console.error("Login error:", error);
       toast({
@@ -85,7 +82,6 @@ export function AuthForm() {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validation
     if (!signupForm.email || !signupForm.password || !signupForm.fullName) {
       toast({
         title: "Form tidak lengkap",
@@ -116,33 +112,11 @@ export function AuthForm() {
     try {
       setIsSubmitting(true);
       
-      // Check if email or fullName already exists
-      const { data: existingProfiles, error: checkError } = await supabase
-        .from('profiles')
-        .select('username, full_name')
-        .or(`username.eq.${signupForm.email},full_name.eq.${signupForm.fullName}`);
-
-      if (checkError) {
-        console.log("Check error (might be expected):", checkError);
-      }
-      
-      if (existingProfiles && existingProfiles.length > 0) {
-        const duplicateEmail = existingProfiles.some(profile => profile.username === signupForm.email);
-        const duplicateName = existingProfiles.some(profile => profile.full_name === signupForm.fullName);
-        
-        if (duplicateEmail) {
-          throw new Error("Email sudah terdaftar. Gunakan email lain.");
-        }
-        
-        if (duplicateName) {
-          throw new Error("Nama sudah terdaftar. Gunakan nama lain.");
-        }
-      }
-      
       const { error } = await supabase.auth.signUp({
         email: signupForm.email,
         password: signupForm.password,
         options: {
+          emailRedirectTo: `${window.location.origin}/`,
           data: {
             full_name: signupForm.fullName,
           }
@@ -153,10 +127,9 @@ export function AuthForm() {
       
       toast({
         title: "Pendaftaran berhasil",
-        description: "Akun Anda telah berhasil dibuat.",
+        description: "Akun Anda telah berhasil dibuat. Silakan periksa email untuk konfirmasi.",
       });
       
-      // Reset form
       setSignupForm({
         email: "",
         password: "",
@@ -184,7 +157,7 @@ export function AuthForm() {
                alt="Logo SMAN 1 Lumbang" 
                className="h-20 w-auto" />
         </div>
-        <CardTitle className="text-center text-counseling-blue text-2xl">BK Connect</CardTitle>
+        <CardTitle className="text-center text-blue-600 text-2xl">BK Connect</CardTitle>
         <CardDescription className="text-center">
           Aplikasi Bimbingan Konseling Digital
         </CardDescription>
@@ -226,7 +199,7 @@ export function AuthForm() {
               
               <Button
                 type="submit"
-                className="w-full bg-counseling-blue hover:bg-blue-600"
+                className="w-full bg-blue-600 hover:bg-blue-700"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Memproses..." : "Login"}
@@ -289,7 +262,7 @@ export function AuthForm() {
               
               <Button
                 type="submit"
-                className="w-full bg-counseling-blue hover:bg-blue-600"
+                className="w-full bg-blue-600 hover:bg-blue-700"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Memproses..." : "Daftar"}

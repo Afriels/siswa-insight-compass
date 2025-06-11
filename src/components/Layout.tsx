@@ -44,10 +44,15 @@ export const Layout = ({ children }: LayoutProps) => {
           .eq('id', user.id)
           .single();
           
-        if (error) throw error;
-        setUserProfile(data);
+        if (error) {
+          console.error("Error fetching profile:", error);
+          setUserProfile({ role: 'student' });
+        } else {
+          setUserProfile(data);
+        }
       } catch (error) {
         console.error("Error fetching user profile:", error);
+        setUserProfile({ role: 'student' });
       }
     };
     
@@ -63,11 +68,9 @@ export const Layout = ({ children }: LayoutProps) => {
     }
   };
 
-  // Different navigation items based on user role
   const getNavigationItems = () => {
     const isStudent = userProfile?.role === 'student';
     const isAdmin = userProfile?.role === 'admin';
-    const isCounselor = userProfile?.role === 'counselor';
 
     if (isStudent) {
       return [
@@ -80,7 +83,6 @@ export const Layout = ({ children }: LayoutProps) => {
       ];
     }
 
-    // Admin and Counselor get full access
     return [
       { to: "/", icon: Home, label: "Dashboard" },
       { to: "/students", icon: Users, label: "Siswa" },
@@ -113,7 +115,7 @@ export const Layout = ({ children }: LayoutProps) => {
             to={item.to}
             className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               isActive
-                ? "bg-counseling-blue text-white"
+                ? "bg-blue-600 text-white"
                 : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
             }`}
           >
@@ -139,7 +141,7 @@ export const Layout = ({ children }: LayoutProps) => {
                   className="h-8 w-8"
                 />
                 <div>
-                  <h1 className="text-xl font-bold text-counseling-blue">BK Connect</h1>
+                  <h1 className="text-xl font-bold text-blue-600">BK Connect</h1>
                   <p className="text-xs text-gray-500">Sistem Bimbingan Konseling</p>
                 </div>
               </div>
@@ -152,7 +154,7 @@ export const Layout = ({ children }: LayoutProps) => {
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center space-x-3">
                 <div className="flex-shrink-0">
-                  <div className="h-8 w-8 rounded-full bg-counseling-blue flex items-center justify-center">
+                  <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center">
                     <span className="text-sm font-medium text-white">
                       {user?.email?.charAt(0).toUpperCase()}
                     </span>
@@ -192,7 +194,7 @@ export const Layout = ({ children }: LayoutProps) => {
               alt="Logo" 
               className="h-6 w-6"
             />
-            <h1 className="text-lg font-bold text-counseling-blue">BK Connect</h1>
+            <h1 className="text-lg font-bold text-blue-600">BK Connect</h1>
           </div>
           
           <div className="flex items-center space-x-2">
@@ -212,7 +214,7 @@ export const Layout = ({ children }: LayoutProps) => {
                       className="h-8 w-8"
                     />
                     <div>
-                      <h1 className="text-xl font-bold text-counseling-blue">BK Connect</h1>
+                      <h1 className="text-xl font-bold text-blue-600">BK Connect</h1>
                       <p className="text-xs text-gray-500">Sistem Bimbingan Konseling</p>
                     </div>
                   </div>
@@ -224,7 +226,7 @@ export const Layout = ({ children }: LayoutProps) => {
                   <div className="border-t border-gray-200 p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <div className="h-8 w-8 rounded-full bg-counseling-blue flex items-center justify-center">
+                        <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center">
                           <span className="text-sm font-medium text-white">
                             {user?.email?.charAt(0).toUpperCase()}
                           </span>

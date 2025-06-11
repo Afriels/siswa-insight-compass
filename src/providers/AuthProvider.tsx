@@ -22,10 +22,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [inactivityTimer, setInactivityTimer] = useState<NodeJS.Timeout | null>(null);
 
   const resetInactivityTimer = useCallback(() => {
-    // Clear existing timer
     if (inactivityTimer) clearTimeout(inactivityTimer);
     
-    // Only set new timer if user is logged in
     if (user) {
       const timer = setTimeout(async () => {
         console.log("User inactive for 10 minutes, logging out");
@@ -38,23 +36,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     if (inactivityTimer) clearTimeout(inactivityTimer);
+    setLoading(true);
     await supabase.auth.signOut();
+    setUser(null);
+    setSession(null);
+    setLoading(false);
   };
 
   useEffect(() => {
-    // Set up event listeners for user activity
     const activityEvents = ['mousedown', 'keypress', 'scroll', 'touchstart'];
     
     const handleUserActivity = () => {
       resetInactivityTimer();
     };
     
-    // Add event listeners
     activityEvents.forEach(event => {
       document.addEventListener(event, handleUserActivity);
     });
 
-    // Clear event listeners on cleanup
     return () => {
       activityEvents.forEach(event => {
         document.removeEventListener(event, handleUserActivity);
@@ -66,9 +65,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     console.log("Setting up auth state listener...");
     
-    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         console.log("Auth state changed:", event, session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
@@ -82,7 +80,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     );
 
-    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session }, error }) => {
       if (error) {
         console.error("Error getting session:", error);

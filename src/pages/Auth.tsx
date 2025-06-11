@@ -10,22 +10,19 @@ const Auth = () => {
   const { user, loading } = useAuth();
   
   useEffect(() => {
-    // If user is already logged in, redirect to dashboard
     if (!loading && user) {
       navigate("/", { replace: true });
     }
   }, [user, loading, navigate]);
 
-  // Show loading while checking auth state
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-counseling-blue"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
-  // Don't render auth form if user is already logged in
   if (user) {
     return null;
   }
