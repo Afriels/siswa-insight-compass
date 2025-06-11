@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -22,6 +21,21 @@ interface ClassData {
   grade: string;
   major?: string;
   studentCount: number;
+}
+
+interface AuthUser {
+  id: string;
+  email?: string;
+  user_metadata?: {
+    class?: string;
+    role?: string;
+    [key: string]: any;
+  };
+  raw_user_meta_data?: {
+    class?: string;
+    role?: string;
+    [key: string]: any;
+  };
 }
 
 const ClassManagement = () => {
@@ -50,8 +64,9 @@ const ClassManagement = () => {
       // Process class data from user metadata
       const classMap = new Map<string, ClassData>();
       
-      authData.users?.forEach(user => {
-        const metadata = user.user_metadata;
+      authData.users?.forEach((user: AuthUser) => {
+        // Try both user_metadata and raw_user_meta_data
+        const metadata = user.user_metadata || user.raw_user_meta_data;
         if (metadata?.class && metadata?.role === 'student') {
           const className = metadata.class;
           
