@@ -34,28 +34,25 @@ const ClassManagement = () => {
     try {
       setLoading(true);
       
-      // Get profiles with user_metadata that contains class information
-      const { data: profiles, error } = await supabase
-        .from('profiles')
-        .select('user_metadata')
-        .eq('role', 'student');
-        
-      if (error) {
-        console.error("Error fetching profiles:", error);
+      // Get auth users to access user_metadata
+      const { data: authData, error: authError } = await supabase.auth.admin.listUsers();
+      
+      if (authError) {
+        console.error("Error fetching users:", authError);
         toast({
           title: "Error",
-          description: "Gagal mengambil data kelas",
+          description: "Gagal mengambil data pengguna",
           variant: "destructive",
         });
         return;
       }
       
-      // Process class data from profiles
+      // Process class data from user metadata
       const classMap = new Map<string, ClassData>();
       
-      profiles?.forEach(profile => {
-        const metadata = profile.user_metadata as any;
-        if (metadata?.class) {
+      authData.users?.forEach(user => {
+        const metadata = user.user_metadata;
+        if (metadata?.class && metadata?.role === 'student') {
           const className = metadata.class;
           
           if (classMap.has(className)) {
