@@ -69,8 +69,7 @@ export function AuthForm() {
         description: "Anda telah berhasil masuk ke akun Anda",
       });
       
-      // Redirect to dashboard after successful login
-      navigate("/dashboard");
+      // Redirect will be handled by auth state change in App.tsx
     } catch (error: any) {
       console.error("Login error:", error);
       toast({
@@ -123,7 +122,9 @@ export function AuthForm() {
         .select('username, full_name')
         .or(`username.eq.${signupForm.email},full_name.eq.${signupForm.fullName}`);
 
-      if (checkError) throw checkError;
+      if (checkError) {
+        console.log("Check error (might be expected):", checkError);
+      }
       
       if (existingProfiles && existingProfiles.length > 0) {
         const duplicateEmail = existingProfiles.some(profile => profile.username === signupForm.email);
@@ -144,7 +145,6 @@ export function AuthForm() {
         options: {
           data: {
             full_name: signupForm.fullName,
-            // Role is now set by default in the database
           }
         }
       });
@@ -153,7 +153,7 @@ export function AuthForm() {
       
       toast({
         title: "Pendaftaran berhasil",
-        description: "Akun Anda telah berhasil dibuat. Silakan periksa email Anda untuk verifikasi.",
+        description: "Akun Anda telah berhasil dibuat.",
       });
       
       // Reset form

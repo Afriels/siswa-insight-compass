@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -23,21 +24,6 @@ interface ClassData {
   studentCount: number;
 }
 
-interface AuthUser {
-  id: string;
-  email?: string;
-  user_metadata?: {
-    class?: string;
-    role?: string;
-    [key: string]: any;
-  };
-  raw_user_meta_data?: {
-    class?: string;
-    role?: string;
-    [key: string]: any;
-  };
-}
-
 const ClassManagement = () => {
   const { toast } = useToast();
   const [classes, setClasses] = useState<ClassData[]>([]);
@@ -48,48 +34,49 @@ const ClassManagement = () => {
     try {
       setLoading(true);
       
-      // Get auth users to access user_metadata
-      const { data: authData, error: authError } = await supabase.auth.admin.listUsers();
+      // Get profiles with role 'student' from the public.profiles table
+      const { data: profiles, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('role', 'student');
       
-      if (authError) {
-        console.error("Error fetching users:", authError);
+      if (error) {
+        console.error("Error fetching profiles:", error);
         toast({
           title: "Error",
-          description: "Gagal mengambil data pengguna",
+          description: "Gagal mengambil data siswa",
           variant: "destructive",
         });
         return;
       }
       
-      // Process class data from user metadata
+      // Process class data from profiles
       const classMap = new Map<string, ClassData>();
       
-      authData.users?.forEach((user: AuthUser) => {
-        // Try both user_metadata and raw_user_meta_data
-        const metadata = user.user_metadata || user.raw_user_meta_data;
-        if (metadata?.class && metadata?.role === 'student') {
-          const className = metadata.class;
+      profiles?.forEach((profile) => {
+        // For now, we'll use a default class name since we don't have class info in profiles
+        // In the future, you might want to add a 'class' field to the profiles table
+        const className = "X-A"; // Default class name
+        
+        if (classMap.has(className)) {
+          const existing = classMap.get(className)!;
+          classMap.set(className, {
+            ...existing,
+            studentCount: existing.studentCount + 1
+          });
+        } else {
+          // Parse class info (e.g., "X-A", "XI IPA 2")
+          const gradeMatch = className.match(/^(X{1,2}I{0,3})/);
+          const grade = gradeMatch ? gradeMatch[1] : 'X';
+          const majorMatch = className.match(/(IPA|IPS|BAHASA)/);
+          const major = majorMatch ? majorMatch[1] : undefined;
           
-          if (classMap.has(className)) {
-            const existing = classMap.get(className)!;
-            classMap.set(className, {
-              ...existing,
-              studentCount: existing.studentCount + 1
-            });
-          } else {
-            // Parse class info (e.g., "X-A", "XI IPA 2")
-            const gradeMatch = className.match(/^(X{1,2}I{0,3})/);
-            const grade = gradeMatch ? gradeMatch[1] : 'Unknown';
-            const majorMatch = className.match(/(IPA|IPS|BAHASA)/);
-            const major = majorMatch ? majorMatch[1] : undefined;
-            
-            classMap.set(className, {
-              name: className,
-              grade: grade,
-              major: major,
-              studentCount: 1
-            });
-          }
+          classMap.set(className, {
+            name: className,
+            grade: grade,
+            major: major,
+            studentCount: 1
+          });
         }
       });
       
