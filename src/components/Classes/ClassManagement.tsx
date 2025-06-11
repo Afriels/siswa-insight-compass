@@ -34,30 +34,29 @@ const ClassManagement = () => {
     try {
       setLoading(true);
       
-      // Get users from auth.users and join with profiles to get class info
-      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
-      
-      if (authError) {
-        console.error("Error fetching auth users:", authError);
-        // Fallback: try to get class info from profiles if available
-        const { data: profiles, error: profilesError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('role', 'student');
-          
-        if (profilesError) throw profilesError;
+      // Get profiles with user_metadata that contains class information
+      const { data: profiles, error } = await supabase
+        .from('profiles')
+        .select('user_metadata')
+        .eq('role', 'student');
         
-        // For now, show placeholder message since we don't have class data in profiles
-        setClasses([]);
+      if (error) {
+        console.error("Error fetching profiles:", error);
+        toast({
+          title: "Error",
+          description: "Gagal mengambil data kelas",
+          variant: "destructive",
+        });
         return;
       }
       
-      // Process class data from auth users metadata
+      // Process class data from profiles
       const classMap = new Map<string, ClassData>();
       
-      authUsers.users?.forEach(user => {
-        if (user.user_metadata?.class && user.user_metadata?.role === 'student') {
-          const className = user.user_metadata.class;
+      profiles?.forEach(profile => {
+        const metadata = profile.user_metadata as any;
+        if (metadata?.class) {
+          const className = metadata.class;
           
           if (classMap.has(className)) {
             const existing = classMap.get(className)!;
