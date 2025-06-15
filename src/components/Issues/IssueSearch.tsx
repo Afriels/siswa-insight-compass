@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -49,7 +48,7 @@ const studentData = [
 
 export function IssueSearch() {
   const [selectedIssues, setSelectedIssues] = useState<string[]>([]);
-  const [selectedKelas, setSelectedKelas] = useState("");
+  const [selectedKelas, setSelectedKelas] = useState("all");
   const [currentTab, setCurrentTab] = useState("kategori");
   
   const issueCategories = ["Akademik", "Sosial", "Pribadi", "Karier", "Keluarga"];
@@ -57,7 +56,7 @@ export function IssueSearch() {
   // Filter students based on selected issues and class
   const filteredStudents = studentData.filter(student => 
     (selectedIssues.length === 0 || selectedIssues.some(issue => student.issues.includes(issue))) &&
-    (selectedKelas === "" || student.kelas === selectedKelas)
+    (selectedKelas === "all" || student.kelas === selectedKelas)
   );
 
   const handleIssueToggle = (issue: string) => {
@@ -111,7 +110,7 @@ export function IssueSearch() {
                     <SelectValue placeholder="Pilih kelas" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Semua Kelas</SelectItem>
+                    <SelectItem value="all">Semua Kelas</SelectItem>
                     <SelectItem value="X-A">X-A</SelectItem>
                     <SelectItem value="X-B">X-B</SelectItem>
                     <SelectItem value="XI-A">XI-A</SelectItem>
@@ -132,7 +131,7 @@ export function IssueSearch() {
         </CardContent>
       </Card>
       
-      {(selectedIssues.length > 0 || selectedKelas !== "") && (
+      {(selectedIssues.length > 0 || selectedKelas !== "all") && (
         <Card className="border shadow-sm">
           <CardHeader>
             <CardTitle className="text-lg font-semibold">
@@ -142,7 +141,7 @@ export function IssueSearch() {
                   ({selectedIssues.join(", ")})
                 </span>
               )}
-              {selectedKelas && (
+              {selectedKelas !== "all" && (
                 <span className="ml-2 text-sm font-normal text-muted-foreground">
                   Kelas: {selectedKelas}
                 </span>
