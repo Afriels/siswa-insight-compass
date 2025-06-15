@@ -67,12 +67,34 @@ const UserManagement = () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "create", payload: userData }),
-    })
-    const result = await response.json()
-    if (!response.ok) throw new Error(result.error || "Gagal membuat user")
-    return result.user
-  }
-  
+    });
+    let result;
+    try {
+      result = await response.json();
+    } catch (err) {
+      console.error("Failed to parse edge function response to JSON:", err);
+      throw new Error("Terjadi error pada response dari server. Silakan cek edge function.");
+    }
+    if (!response.ok) {
+      throw new Error(result?.error || "Gagal membuat user");
+    }
+    return result.user;
+  };
+
+  // Fungsi helper polling tunggu user profile masuk DB setelah mendaftar Auth
+  const waitForNewUserProfile = async (email: string, maxTries = 3, delay = 700) => {
+    for (let i = 0; i < maxTries; i++) {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('username', email)
+        .limit(1);
+      if (profiles && profiles.length > 0) return true;
+      await new Promise(res => setTimeout(res, delay));
+    }
+    return false;
+  };
+
   const deleteSupabaseAdminUser = async (supabaseUserId: string) => {
     const response = await fetch('/functions/v1/admin-user', {
       method: "POST",
@@ -102,12 +124,24 @@ const UserManagement = () => {
         full_name: newUser.fullName,
         role: newUser.role,
       });
-      console.log("User berhasil dibuat:", user);
-      toast({
-        title: "User berhasil dibuat",
-        description: "User baru berhasil ditambahkan",
-        duration: 6000,
-      });
+      console.log("User berhasil dibuat di Auth:", user);
+
+      // Polling untuk pastikan profile sudah masuk di DB
+      const didAppear = await waitForNewUserProfile(newUser.email, 3, 700);
+      if (!didAppear) {
+        toast({
+          title: "User berhasil dibuat Auth, tapi profil belum masuk database",
+          description: "Silakan reload data atau cek kembali. Ada kemungkinan delay pada Supabase trigger.",
+          duration: 9000,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "User berhasil dibuat",
+          description: "User baru berhasil ditambahkan",
+          duration: 6000,
+        });
+      }
       setIsDialogOpen(false);
       setNewUser({ email: "", password: "", fullName: "", role: "student" });
       fetchUsers();
