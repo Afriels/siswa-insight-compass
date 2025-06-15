@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 
 // Gunakan gambar Unsplash (bebas copyright) supaya selalu tampil
@@ -11,7 +10,7 @@ export default function Landing() {
       <header className="container mx-auto py-6 flex flex-col md:flex-row items-center md:justify-between">
         <div>
           <h1 className="font-bold text-3xl md:text-4xl text-counseling-blue drop-shadow-lg">
-            Sistem Bimbingan Konseling SMK
+            SMA Negeri 1 Lumbang
           </h1>
           <p className="mt-2 text-lg text-counseling-dark">
             Lebih dekat, lebih solutif, lebih baik bersama BK.
@@ -23,12 +22,6 @@ export default function Landing() {
             className="bg-counseling-blue text-white px-6 py-2 rounded-xl shadow hover:bg-blue-700"
           >
             Login
-          </Link>
-          <Link
-            to="/admin"
-            className="bg-white border border-counseling-blue text-counseling-blue px-6 py-2 rounded-xl shadow hover:bg-blue-100"
-          >
-            Panel Admin
           </Link>
         </nav>
       </header>
