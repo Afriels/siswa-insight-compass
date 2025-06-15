@@ -17,6 +17,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
+  // Jika user tidak login, langsung ke /auth, JANGAN ke landing
   if (!user) {
     return <Navigate to="/auth" replace />;
   }

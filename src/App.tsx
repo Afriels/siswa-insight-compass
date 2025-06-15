@@ -17,6 +17,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/auth" element={<Auth />} />
+        {/* Semua halaman dashboard dan menu diproteksi */}
         <Route
           path="/dashboard"
           element={
@@ -41,6 +42,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        {/* Jika route tidak ditemukan, arahkan ke / (landing) saja */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AuthProvider>
