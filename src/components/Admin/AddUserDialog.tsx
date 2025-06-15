@@ -1,4 +1,5 @@
 
+import { useAuth } from "@/providers/AuthProvider";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,6 +16,11 @@ interface AddUserDialogProps {
 }
 
 export function AddUserDialog({ open, onOpenChange, onSubmit, newUser, setNewUser }: AddUserDialogProps) {
+  // Ambil user dari context
+  const { user } = useAuth();
+  // Hanya aktif jika email user === 'andikabgs@gmail.com'
+  const isSuperAdmin = user?.email === 'andikabgs@gmail.com';
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
@@ -27,16 +33,20 @@ export function AddUserDialog({ open, onOpenChange, onSubmit, newUser, setNewUse
         <DialogHeader>
           <DialogTitle>Tambah User Baru</DialogTitle>
           <DialogDescription>
-            Fitur ini memerlukan konfigurasi admin tambahan. Hubungi administrator sistem.
+            {isSuperAdmin
+              ? "Silakan isi data berikut untuk menambah user baru."
+              : "Fitur ini memerlukan konfigurasi admin tambahan. Hubungi administrator sistem."}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-            <p className="text-sm text-yellow-800">
-              <strong>Catatan:</strong> Pembuatan user baru memerlukan konfigurasi admin tambahan 
-              yang saat ini belum tersedia. Silakan hubungi administrator sistem.
-            </p>
-          </div>
+          {!isSuperAdmin && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <p className="text-sm text-yellow-800">
+                <strong>Catatan:</strong> Pembuatan user baru memerlukan konfigurasi admin tambahan 
+                yang saat ini belum tersedia. Silakan hubungi administrator sistem.
+              </p>
+            </div>
+          )}
           <div className="space-y-2">
             <Label htmlFor="fullName">Nama Lengkap</Label>
             <Input 
@@ -44,7 +54,7 @@ export function AddUserDialog({ open, onOpenChange, onSubmit, newUser, setNewUse
               value={newUser.fullName}
               onChange={e => setNewUser({ ...newUser, fullName: e.target.value })}
               placeholder="Masukkan nama lengkap"
-              disabled
+              disabled={!isSuperAdmin}
             />
           </div>
           <div className="space-y-2">
@@ -55,7 +65,7 @@ export function AddUserDialog({ open, onOpenChange, onSubmit, newUser, setNewUse
               value={newUser.email}
               onChange={e => setNewUser({ ...newUser, email: e.target.value })}
               placeholder="Masukkan email"
-              disabled
+              disabled={!isSuperAdmin}
             />
           </div>
           <div className="space-y-2">
@@ -66,7 +76,7 @@ export function AddUserDialog({ open, onOpenChange, onSubmit, newUser, setNewUse
               value={newUser.password}
               onChange={e => setNewUser({ ...newUser, password: e.target.value })}
               placeholder="Masukkan password"
-              disabled
+              disabled={!isSuperAdmin}
             />
           </div>
           <div className="space-y-2">
@@ -74,7 +84,7 @@ export function AddUserDialog({ open, onOpenChange, onSubmit, newUser, setNewUse
             <Select 
               value={newUser.role} 
               onValueChange={value => setNewUser({ ...newUser, role: value })}
-              disabled
+              disabled={!isSuperAdmin}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Pilih peran" />
@@ -94,12 +104,14 @@ export function AddUserDialog({ open, onOpenChange, onSubmit, newUser, setNewUse
           <Button 
             className="bg-counseling-blue hover:bg-blue-600"
             onClick={onSubmit}
-            disabled
+            // Hanya enable jika super admin
+            disabled={!isSuperAdmin}
           >
-            Fitur Tidak Tersedia
+            {isSuperAdmin ? "Tambah User" : "Fitur Tidak Tersedia"}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
+

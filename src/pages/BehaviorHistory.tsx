@@ -17,7 +17,8 @@ const BehaviorHistoryPage = () => {
             </p>
           </div>
           <Button asChild className="mt-4 sm:mt-0 bg-counseling-blue hover:bg-blue-600">
-            <Link to="/behavior">
+            {/* Ganti ke /dashboard/behavior */}
+            <Link to="/dashboard/behavior">
               <Plus size={16} className="mr-2" />
               Catat Perilaku Baru
             </Link>
@@ -31,3 +32,4 @@ const BehaviorHistoryPage = () => {
 };
 
 export default BehaviorHistoryPage;
+
