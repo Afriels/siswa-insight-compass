@@ -1,77 +1,48 @@
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import {
-  Home, Users, Calendar, MessageSquare, Search, 
-  BarChart3, UserCog, Menu, LogOut, Brain, 
-  BookOpen, MessageCircle, ClipboardCheck
-} from "lucide-react";
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarHeader,
+} from "@/components/ui/sidebar";
+import { LogOut, Home, Users, Calendar, MessageSquare, ClipboardCheck, BarChart3, Search, Brain, MessageCircle, BookOpen, UserCog, Menu } from "lucide-react";
 
-interface LayoutProps {
-  children?: React.ReactNode;
-}
-
-export const Layout = ({ children }: LayoutProps) => {
+export const Layout = ({ children }) => {
   const { user, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [userProfile, setUserProfile] = useState<{ role: string } | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  useEffect(() => {
+    // Fetch the profile once on mount
     const fetchProfile = async () => {
       if (!user) return;
-      
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', user.id)
-          .single();
-          
-        if (error) {
-          console.error("Error fetching profile:", error);
-          setUserProfile({ role: 'student' });
-        } else {
-          setUserProfile(data);
-        }
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-        setUserProfile({ role: 'student' });
-      }
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+      if (!error && data) setUserProfile(data);
+      else setUserProfile({ role: "student" });
     };
-    
     fetchProfile();
   }, [user]);
 
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      navigate("/auth");
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
-  };
-
-  const getNavigationItems = () => {
-    const isStudent = userProfile?.role === 'student';
-    const isAdmin = userProfile?.role === 'admin';
-
+  const navigationItems = () => {
+    const isStudent = userProfile?.role === "student";
+    const isAdmin = userProfile?.role === "admin";
     if (isStudent) {
       return [
         { to: "/", icon: Home, label: "Dashboard" },
@@ -82,7 +53,6 @@ export const Layout = ({ children }: LayoutProps) => {
         { to: "/profile", icon: UserCog, label: "Profil" },
       ];
     }
-
     return [
       { to: "/", icon: Home, label: "Dashboard" },
       { to: "/students", icon: Users, label: "Siswa" },
@@ -100,169 +70,89 @@ export const Layout = ({ children }: LayoutProps) => {
     ];
   };
 
-  const navigationItems = getNavigationItems();
-
-  const NavItems = () => (
-    <>
-      {navigationItems.map((item) => {
-        const Icon = item.icon;
-        const isActive = location.pathname === item.to || 
-          (item.to !== "/" && location.pathname.startsWith(item.to));
-        
-        return (
-          <Link
-            key={item.to}
-            to={item.to}
-            className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              isActive
-                ? "bg-blue-600 text-white"
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-            }`}
-          >
-            <Icon size={18} />
-            <span>{item.label}</span>
-          </Link>
-        );
-      })}
-    </>
-  );
+  const onMenuClick = (to: string) => {
+    navigate(to);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Desktop Sidebar */}
-      <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
-        <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-white">
-          <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
-            <div className="flex flex-shrink-0 items-center px-4 mb-8">
-              <div className="flex items-center space-x-3">
-                <img 
-                  src="https://sman1lumbang.sch.id/wp-content/uploads/2022/12/logo-smanilum-60mm.png" 
-                  alt="Logo" 
-                  className="h-8 w-8"
-                />
-                <div>
-                  <h1 className="text-xl font-bold text-blue-600">BK Connect</h1>
-                  <p className="text-xs text-gray-500">Sistem Bimbingan Konseling</p>
-                </div>
+    <SidebarProvider>
+      <div className="min-h-screen w-full flex bg-gradient-to-br from-blue-100 via-white to-violet-100 dark:from-[#10111b] dark:via-[#15041f] dark:to-[#1a2431] transition-colors duration-700">
+        {/* Sidebar */}
+        <Sidebar className="shadow-xl border-r border-blue-50 dark:border-[#222030] bg-white/90 dark:bg-[#12041d]/80 backdrop-blur-lg transition-all">
+          <SidebarHeader>
+            <div className="flex items-center gap-3 py-2 px-2">
+              <img
+                src="https://sman1lumbang.sch.id/wp-content/uploads/2022/12/logo-smanilum-60mm.png"
+                alt="Logo"
+                className="h-9 w-9 rounded-lg border-2 border-blue-300 shadow"
+              />
+              <div>
+                <div className="font-bold text-lg bg-gradient-to-r from-blue-600 to-purple-700 text-transparent bg-clip-text animate-fadeIn">BK Connect</div>
+                <span className="block text-xs text-blue-400 dark:text-purple-200 font-medium">Sistem BK Digital</span>
               </div>
             </div>
-            <nav className="mt-5 flex-1 space-y-1 px-2">
-              <NavItems />
-            </nav>
-          </div>
-          <div className="flex flex-shrink-0 border-t border-gray-200 p-4">
-            <div className="flex items-center justify-between w-full">
-              <div className="flex items-center space-x-3">
-                <div className="flex-shrink-0">
-                  <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center">
-                    <span className="text-sm font-medium text-white">
-                      {user?.email?.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
-                    {user?.email}
-                  </p>
-                  <p className="text-xs text-gray-500 capitalize">
-                    {userProfile?.role || 'User'}
-                  </p>
-                </div>
+          </SidebarHeader>
+          <SidebarContent className="pt-1">
+            <SidebarGroup>
+              <SidebarGroupLabel>Menu</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {navigationItems().map((item) => {
+                    const isCurrent = location.pathname === item.to || (item.to !== "/" && location.pathname.startsWith(item.to));
+                    return (
+                      <SidebarMenuItem key={item.to}>
+                        <SidebarMenuButton
+                          isActive={isCurrent}
+                          className="hover:scale-105 transition bg-gradient-to-l from-blue-50 dark:from-indigo-900 to-white/70 dark:to-transparent"
+                          onClick={() => onMenuClick(item.to)}
+                        >
+                          <item.icon size={18} className={`mr-1 ${isCurrent ? "text-blue-700 dark:text-violet-300" : "text-gray-500 dark:text-gray-200"}`} />
+                          <span>{item.label}</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+          <SidebarFooter>
+            <div className="flex items-center p-2 gap-2 bg-gradient-to-r from-blue-100 via-white to-violet-100 dark:from-violet-950 dark:to-indigo-950 rounded-lg mt-3 animate-fadeIn">
+              <div className="h-8 w-8 bg-blue-600 flex items-center justify-center text-white font-bold rounded-full shadow animate-pulse">{user?.email?.charAt(0).toUpperCase()}</div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs font-bold text-gray-800 dark:text-gray-50 truncate">{user?.email}</div>
+                <div className="text-[10px] capitalize text-gray-400 dark:text-gray-300">{userProfile?.role || "User"}</div>
               </div>
-              <div className="flex items-center space-x-2">
-                <ThemeToggle />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleSignOut}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <LogOut size={16} />
-                </Button>
-              </div>
+              <ThemeToggle />
+              <button
+                onClick={async () => { await signOut(); navigate("/auth"); }}
+                className="ml-1 text-gray-400 hover:text-red-500 transition"
+                title="Keluar"
+              >
+                <LogOut size={16} />
+              </button>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Header */}
-      <div className="md:hidden">
-        <div className="flex items-center justify-between bg-white border-b border-gray-200 px-4 py-3">
-          <div className="flex items-center space-x-3">
-            <img 
-              src="https://sman1lumbang.sch.id/wp-content/uploads/2022/12/logo-smanilum-60mm.png" 
-              alt="Logo" 
-              className="h-6 w-6"
-            />
-            <h1 className="text-lg font-bold text-blue-600">BK Connect</h1>
-          </div>
-          
-          <div className="flex items-center space-x-2">
+          </SidebarFooter>
+        </Sidebar>
+        <div className="flex-1 min-w-0">
+          {/* Topbar for mobile */}
+          <div className="md:hidden flex justify-between items-center px-4 py-2 bg-gradient-to-l from-blue-50 via-white to-violet-100 dark:from-violet-950 dark:to-indigo-950 shadow-[0_2px_8px_0_#0001] z-10 sticky top-0">
+            <div className="flex items-center gap-2">
+              <SidebarTrigger>
+                <Menu />
+              </SidebarTrigger>
+              <img src="https://sman1lumbang.sch.id/wp-content/uploads/2022/12/logo-smanilum-60mm.png" alt="Logo" className="h-8 w-8" />
+              <span className="font-bold text-blue-600 text-base">BK Connect</span>
+            </div>
             <ThemeToggle />
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  <Menu size={20} />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-64 p-0">
-                <div className="flex h-full flex-col">
-                  <div className="flex items-center space-x-3 px-4 py-6 border-b">
-                    <img 
-                      src="https://sman1lumbang.sch.id/wp-content/uploads/2022/12/logo-smanilum-60mm.png" 
-                      alt="Logo" 
-                      className="h-8 w-8"
-                    />
-                    <div>
-                      <h1 className="text-xl font-bold text-blue-600">BK Connect</h1>
-                      <p className="text-xs text-gray-500">Sistem Bimbingan Konseling</p>
-                    </div>
-                  </div>
-                  
-                  <nav className="flex-1 space-y-1 px-2 py-4">
-                    <NavItems />
-                  </nav>
-                  
-                  <div className="border-t border-gray-200 p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center">
-                          <span className="text-sm font-medium text-white">
-                            {user?.email?.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900 truncate">
-                            {user?.email}
-                          </p>
-                          <p className="text-xs text-gray-500 capitalize">
-                            {userProfile?.role || 'User'}
-                          </p>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleSignOut}
-                        className="text-gray-500 hover:text-gray-700"
-                      >
-                        <LogOut size={16} />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
           </div>
+          <main className="p-2 md:p-8 max-w-screen-2xl mx-auto animate-fadeIn">
+            <div className="rounded-2xl shadow-lg p-2 md:p-5 bg-white/80 dark:bg-slate-950/70 transition-all duration-700 min-h-[86vh]">
+              {children || <Outlet />}
+            </div>
+          </main>
         </div>
       </div>
-
-      {/* Main Content */}
-      <div className="md:pl-64">
-        <main className="p-4 md:p-8">
-          {children || <Outlet />}
-        </main>
-      </div>
-    </div>
+    </SidebarProvider>
   );
 };

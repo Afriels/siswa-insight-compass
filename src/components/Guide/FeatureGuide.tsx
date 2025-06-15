@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -191,14 +190,18 @@ export const FeatureGuide = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button 
-          variant="outline" 
-          className="fixed bottom-6 right-6 rounded-full w-16 h-16 bg-gradient-to-r from-counseling-blue to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110 z-50 border-2 border-white"
+        <Button
+          variant="outline"
+          className="fixed bottom-6 right-6 rounded-full w-16 h-16 bg-gradient-to-r from-counseling-blue to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110 z-[70] border-2 border-white"
+          style={{ boxShadow: '0 8px 40px 0 #426cf861' }}
         >
           <HelpCircle className="h-7 w-7" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto animate-slideInUp bg-gradient-to-br from-blue-50 to-indigo-50">
+      <DialogContent
+        className="max-w-6xl max-h-[85vh] overflow-y-auto animate-slideInUp bg-gradient-to-br from-blue-50 via-violet-100 to-indigo-50 dark:from-[#15041f] dark:via-[#23324a] dark:to-[#332553] backdrop-blur-2xl shadow-2xl border-0 z-[100]"
+        style={{ boxShadow: '0 12px 48px 0 #4235bf33' }}
+      >
         <DialogHeader className="border-b pb-4">
           <DialogTitle className="flex items-center gap-3 text-2xl font-bold bg-gradient-to-r from-counseling-blue to-indigo-600 bg-clip-text text-transparent">
             <div className="p-2 rounded-lg bg-counseling-blue text-white">

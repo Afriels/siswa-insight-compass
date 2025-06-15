@@ -49,6 +49,7 @@
 
   .dark {
     /* Dark theme with raspberry-purple palette */
+    transition: background 0.5s, color 0.5s;
     --background: var(--dark-chocolate-cosmos);
     --foreground: 42 38% 97%;
     --card: var(--dark-rosewood);
@@ -291,4 +292,22 @@
   100% {
     background-position: 200% 0;
   }
+}
+
+/* Add extra professional and subtle animation classes */
+@keyframes fadeInSoft {
+  from { opacity: 0; filter: blur(12px);}
+  to { opacity: 1; filter: blur(0);}
+}
+.animate-fadeInSoft {
+  animation: fadeInSoft 0.9s cubic-bezier(0.45,0,0.55,1);
+}
+@keyframes rainbowGradient {
+  0% { background-position:0% 50%; }
+  50% { background-position:100% 50%; }
+  100% { background-position:0% 50%; }
+}
+.gradient-animated {
+  background-size: 200% 200%;
+  animation: rainbowGradient 4s ease-in-out infinite;
 }
