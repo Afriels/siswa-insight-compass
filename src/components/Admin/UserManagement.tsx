@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -84,6 +83,28 @@ const UserManagement = () => {
     user.role?.toLowerCase().includes(searchTerm.toLowerCase())
   );
   
+  const createSupabaseAdminUser = async (userData: {email: string, full_name: string, password: string, role: string}) => {
+    const response = await fetch('/functions/v1/admin-user', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "create", payload: userData }),
+    })
+    const result = await response.json()
+    if (!response.ok) throw new Error(result.error || "Gagal membuat user")
+    return result.user
+  }
+  
+  const deleteSupabaseAdminUser = async (supabaseUserId: string) => {
+    const response = await fetch('/functions/v1/admin-user', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "delete", payload: { id: supabaseUserId } }),
+    })
+    const result = await response.json()
+    if (!response.ok) throw new Error(result.error || "Gagal menghapus user")
+    return result.success
+  }
+  
   const handleCreateUser = async () => {
     try {
       if (!newUser.email || !newUser.password || !newUser.fullName) {
@@ -94,20 +115,26 @@ const UserManagement = () => {
         });
         return;
       }
-      
-      // Show message that admin functions are not available
-      toast({
-        title: "Fitur Tidak Tersedia",
-        description: "Pembuatan user baru memerlukan konfigurasi admin yang belum tersedia. Hubungi administrator sistem.",
-        variant: "destructive",
-        duration: 8000,
+
+      const user = await createSupabaseAdminUser({
+        email: newUser.email,
+        password: newUser.password,
+        full_name: newUser.fullName,
+        role: newUser.role,
       });
-      
-    } catch (error: any) {
-      console.error("Error creating user:", error);
+
       toast({
-        title: "Error",
-        description: error.message || "Gagal membuat pengguna baru",
+        title: "User berhasil dibuat",
+        description: "User baru berhasil ditambahkan",
+        duration: 6000,
+      });
+      setIsDialogOpen(false);
+      setNewUser({ email: "", password: "", fullName: "", role: "student" });
+      fetchUsers();
+    } catch (error: any) {
+      toast({
+        title: "Gagal membuat user",
+        description: error.message,
         variant: "destructive",
       });
     }
@@ -140,22 +167,27 @@ const UserManagement = () => {
   
   const handleDeleteUser = async (userId: string) => {
     try {
-      if (!confirm("Apakah Anda yakin ingin menghapus pengguna ini?")) {
-        return;
-      }
-      
-      // Show message that admin functions are not available
+      if (!confirm("Apakah Anda yakin ingin menghapus pengguna ini?")) return;
+
+      // Ambil username/user_id dari profiles
+      const user = users.find((u) => u.id === userId);
+      if (!user) return;
+
+      // Hapus dari Supabase Auth (edge function)
+      await deleteSupabaseAdminUser(userId);
+
+      // Hapus dari profiles table
+      await supabase.from('profiles').delete().eq('id', userId);
+
       toast({
-        title: "Fitur Tidak Tersedia",
-        description: "Penghapusan user memerlukan konfigurasi admin yang belum tersedia. Hubungi administrator sistem.",
-        variant: "destructive",
+        title: "User berhasil dihapus",
+        description: "Pengguna sudah berhasil dihapus dari sistem",
       });
-      
+      fetchUsers();
     } catch (error: any) {
-      console.error("Error deleting user:", error);
       toast({
-        title: "Error",
-        description: "Gagal menghapus pengguna",
+        title: "Gagal menghapus user",
+        description: error.message,
         variant: "destructive",
       });
     }
