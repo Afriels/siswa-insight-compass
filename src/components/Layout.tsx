@@ -45,28 +45,28 @@ export const Layout = ({ children }) => {
     const isAdmin = userProfile?.role === "admin";
     if (isStudent) {
       return [
-        { to: "/", icon: Home, label: "Dashboard" },
-        { to: "/consultation", icon: MessageSquare, label: "Konsultasi" },
-        { to: "/psychology-test", icon: Brain, label: "Tes Psikologi" },
-        { to: "/forum", icon: MessageCircle, label: "Forum" },
-        { to: "/ai-assistant", icon: BookOpen, label: "AI Assistant" },
-        { to: "/profile", icon: UserCog, label: "Profil" },
+        { to: "/dashboard", icon: Home, label: "Dashboard" },
+        { to: "/dashboard/consultation", icon: MessageSquare, label: "Konsultasi" },
+        { to: "/dashboard/psychology-test", icon: Brain, label: "Tes Psikologi" },
+        { to: "/dashboard/forum", icon: MessageCircle, label: "Forum" },
+        { to: "/dashboard/ai-assistant", icon: BookOpen, label: "AI Assistant" },
+        { to: "/dashboard/profile", icon: UserCog, label: "Profil" },
       ];
     }
     return [
-      { to: "/", icon: Home, label: "Dashboard" },
-      { to: "/students", icon: Users, label: "Siswa" },
-      { to: "/schedule", icon: Calendar, label: "Jadwal" },
-      { to: "/consultation", icon: MessageSquare, label: "Konsultasi" },
-      { to: "/behavior", icon: ClipboardCheck, label: "Perilaku" },
-      { to: "/behavior-history", icon: BarChart3, label: "Riwayat Perilaku" },
-      { to: "/issues", icon: Search, label: "Pencarian Masalah" },
-      { to: "/sociogram", icon: BarChart3, label: "Sosiogram" },
-      { to: "/psychology-test", icon: Brain, label: "Tes Psikologi" },
-      { to: "/forum", icon: MessageCircle, label: "Forum" },
-      { to: "/ai-assistant", icon: BookOpen, label: "AI Assistant" },
-      ...(isAdmin ? [{ to: "/admin", icon: UserCog, label: "Admin" }] : []),
-      { to: "/profile", icon: UserCog, label: "Profil" },
+      { to: "/dashboard", icon: Home, label: "Dashboard" },
+      { to: "/dashboard/students", icon: Users, label: "Siswa" },
+      { to: "/dashboard/schedule", icon: Calendar, label: "Jadwal" },
+      { to: "/dashboard/consultation", icon: MessageSquare, label: "Konsultasi" },
+      { to: "/dashboard/behavior", icon: ClipboardCheck, label: "Perilaku" },
+      { to: "/dashboard/behavior-history", icon: BarChart3, label: "Riwayat Perilaku" },
+      { to: "/dashboard/issues", icon: Search, label: "Pencarian Masalah" },
+      { to: "/dashboard/sociogram", icon: BarChart3, label: "Sosiogram" },
+      { to: "/dashboard/psychology-test", icon: Brain, label: "Tes Psikologi" },
+      { to: "/dashboard/forum", icon: MessageCircle, label: "Forum" },
+      { to: "/dashboard/ai-assistant", icon: BookOpen, label: "AI Assistant" },
+      ...(isAdmin ? [{ to: "/dashboard/admin", icon: UserCog, label: "Admin" }] : []),
+      { to: "/dashboard/profile", icon: UserCog, label: "Profil" },
     ];
   };
 
