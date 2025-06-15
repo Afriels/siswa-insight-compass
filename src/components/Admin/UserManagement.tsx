@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -27,7 +26,8 @@ const UserManagement = () => {
     fullName: "",
     role: "student"
   });
-  
+  const [creating, setCreating] = useState(false);
+
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -85,6 +85,7 @@ const UserManagement = () => {
   }
   
   const handleCreateUser = async () => {
+    console.log("handleCreateUser dipanggil");
     try {
       if (!newUser.email || !newUser.password || !newUser.fullName) {
         toast({
@@ -94,12 +95,14 @@ const UserManagement = () => {
         });
         return;
       }
+      setCreating(true);
       const user = await createSupabaseAdminUser({
         email: newUser.email,
         password: newUser.password,
         full_name: newUser.fullName,
         role: newUser.role,
       });
+      console.log("User berhasil dibuat:", user);
       toast({
         title: "User berhasil dibuat",
         description: "User baru berhasil ditambahkan",
@@ -109,11 +112,14 @@ const UserManagement = () => {
       setNewUser({ email: "", password: "", fullName: "", role: "student" });
       fetchUsers();
     } catch (error: any) {
+      console.error("Gagal membuat user:", error);
       toast({
         title: "Gagal membuat user",
         description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -172,6 +178,7 @@ const UserManagement = () => {
           onSubmit={handleCreateUser}
           newUser={newUser}
           setNewUser={setNewUser}
+          loading={creating}
         />
       </CardHeader>
       <CardContent>

@@ -1,4 +1,3 @@
-
 import { useAuth } from "@/providers/AuthProvider";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -13,9 +12,10 @@ interface AddUserDialogProps {
   onSubmit: () => void;
   newUser: { email: string; password: string; fullName: string; role: string; };
   setNewUser: (data: { email: string; password: string; fullName: string; role: string; }) => void;
+  loading?: boolean;
 }
 
-export function AddUserDialog({ open, onOpenChange, onSubmit, newUser, setNewUser }: AddUserDialogProps) {
+export function AddUserDialog({ open, onOpenChange, onSubmit, newUser, setNewUser, loading }: AddUserDialogProps) {
   // Ambil user dari context
   const { user } = useAuth();
   // Hanya aktif jika email user === 'andikabgs@gmail.com'
@@ -54,7 +54,7 @@ export function AddUserDialog({ open, onOpenChange, onSubmit, newUser, setNewUse
               value={newUser.fullName}
               onChange={e => setNewUser({ ...newUser, fullName: e.target.value })}
               placeholder="Masukkan nama lengkap"
-              disabled={!isSuperAdmin}
+              disabled={!isSuperAdmin || loading}
             />
           </div>
           <div className="space-y-2">
@@ -65,7 +65,7 @@ export function AddUserDialog({ open, onOpenChange, onSubmit, newUser, setNewUse
               value={newUser.email}
               onChange={e => setNewUser({ ...newUser, email: e.target.value })}
               placeholder="Masukkan email"
-              disabled={!isSuperAdmin}
+              disabled={!isSuperAdmin || loading}
             />
           </div>
           <div className="space-y-2">
@@ -76,7 +76,7 @@ export function AddUserDialog({ open, onOpenChange, onSubmit, newUser, setNewUse
               value={newUser.password}
               onChange={e => setNewUser({ ...newUser, password: e.target.value })}
               placeholder="Masukkan password"
-              disabled={!isSuperAdmin}
+              disabled={!isSuperAdmin || loading}
             />
           </div>
           <div className="space-y-2">
@@ -84,7 +84,7 @@ export function AddUserDialog({ open, onOpenChange, onSubmit, newUser, setNewUse
             <Select 
               value={newUser.role} 
               onValueChange={value => setNewUser({ ...newUser, role: value })}
-              disabled={!isSuperAdmin}
+              disabled={!isSuperAdmin || loading}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Pilih peran" />
@@ -98,20 +98,20 @@ export function AddUserDialog({ open, onOpenChange, onSubmit, newUser, setNewUse
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
             Batal
           </Button>
           <Button 
             className="bg-counseling-blue hover:bg-blue-600"
             onClick={onSubmit}
-            // Hanya enable jika super admin
-            disabled={!isSuperAdmin}
+            disabled={!isSuperAdmin || loading}
           >
-            {isSuperAdmin ? "Tambah User" : "Fitur Tidak Tersedia"}
+            {loading 
+              ? "Menyimpan..."
+              : (isSuperAdmin ? "Tambah User" : "Fitur Tidak Tersedia")}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
-
