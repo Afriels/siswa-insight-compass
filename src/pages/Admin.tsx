@@ -9,8 +9,23 @@ import ConsultationManagement from "@/components/Admin/ConsultationManagement";
 import LetterManagement from "@/components/Admin/LetterManagement";
 import { TestManagement } from "@/components/Psychology/TestManagement";
 import { MultiWhatsAppSender } from "@/components/WhatsApp/MultiWhatsAppSender";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
+
+const MENU_ITEMS = [
+  { value: "users", label: "User" },
+  { value: "students", label: "Siswa" },
+  { value: "classes", label: "Kelas" },
+  { value: "behavior", label: "Perilaku" },
+  { value: "consultation", label: "Konsultasi" },
+  { value: "psychology", label: "Tes Psikologi" },
+  { value: "letters", label: "Surat" },
+  { value: "whatsapp", label: "WhatsApp" },
+];
 
 const Admin = () => {
+  const [tab, setTab] = useState("users");
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -21,56 +36,64 @@ const Admin = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
-            <TabsTrigger value="users">User</TabsTrigger>
-            <TabsTrigger value="students">Siswa</TabsTrigger>
-            <TabsTrigger value="classes">Kelas</TabsTrigger>
-            <TabsTrigger value="behavior">Perilaku</TabsTrigger>
-            <TabsTrigger value="consultation">Konsultasi</TabsTrigger>
-            <TabsTrigger value="psychology">Tes Psikologi</TabsTrigger>
-            <TabsTrigger value="letters">Surat</TabsTrigger>
-            <TabsTrigger value="whatsapp">WhatsApp</TabsTrigger>
-          </TabsList>
+        {/* Dropdown untuk mobile/screen kecil */}
+        <div className="block md:hidden">
+          <Select value={tab} onValueChange={setTab}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Pilih menu" />
+            </SelectTrigger>
+            <SelectContent>
+              {MENU_ITEMS.map((item) => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-          <TabsContent value="users">
+        {/* Tablist tetap tampil di layar besar */}
+        <div className="hidden md:block">
+          <Tabs value={tab} onValueChange={setTab} defaultValue="users" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
+              {MENU_ITEMS.map((item) => (
+                <TabsTrigger key={item.value} value={item.value}>{item.label}</TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        </div>
+
+        {/* Tab content, selalu render konten sesuai tab */}
+        <div>
+          {tab === "users" && (
             <UserManagement />
-          </TabsContent>
-
-          <TabsContent value="students">
+          )}
+          {tab === "students" && (
             <StudentTable />
-          </TabsContent>
-
-          <TabsContent value="classes">
+          )}
+          {tab === "classes" && (
             <ClassManagement />
-          </TabsContent>
-
-          <TabsContent value="behavior">
+          )}
+          {tab === "behavior" && (
             <BehaviorManagement />
-          </TabsContent>
-
-          <TabsContent value="consultation">
+          )}
+          {tab === "consultation" && (
             <ConsultationManagement />
-          </TabsContent>
-
-          <TabsContent value="psychology">
-            <TestManagement 
-              onBack={() => {}}
-              onTestsUpdated={() => {}}
-            />
-          </TabsContent>
-
-          <TabsContent value="letters">
+          )}
+          {tab === "psychology" && (
+            <TestManagement onBack={() => {}} onTestsUpdated={() => {}} />
+          )}
+          {tab === "letters" && (
             <LetterManagement />
-          </TabsContent>
-
-          <TabsContent value="whatsapp">
+          )}
+          {tab === "whatsapp" && (
             <MultiWhatsAppSender />
-          </TabsContent>
-        </Tabs>
+          )}
+        </div>
       </div>
     </Layout>
   );
 };
 
 export default Admin;
+
