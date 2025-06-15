@@ -1,6 +1,6 @@
-
 import { Link } from "react-router-dom";
 import { Lightbulb, Users, MessageCircle, Calendar, HelpCircle, CheckCircle, BookOpen, ShieldCheck } from "lucide-react";
+import NavbarLanding from "@/components/Landing/NavbarLanding";
 
 const heroImage =
   "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?fit=crop&w=700&q=80";
@@ -91,8 +91,10 @@ const faqs = [
 export default function Landing() {
   return (
     <main className="relative min-h-screen bg-gradient-to-b from-counseling-blue/80 to-counseling-lightGreen/80 flex flex-col">
+      {/* Navbar Landing */}
+      <NavbarLanding />
       {/* Hero Section */}
-      <header className="container mx-auto py-6 flex flex-col md:flex-row items-center md:justify-between animate-fade-in">
+      <header className="container mx-auto py-6 flex flex-col md:flex-row items-center md:justify-between animate-fade-in mt-16">
         <div>
           <h1 className="font-bold text-3xl md:text-5xl text-counseling-blue drop-shadow-lg">
             SMA Negeri 1 Lumbang
