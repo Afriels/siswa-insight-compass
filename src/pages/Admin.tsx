@@ -1,6 +1,5 @@
 
 import { Layout } from "@/components/Layout";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UserManagement from "@/components/Admin/UserManagement";
 import ClassManagement from "@/components/Classes/ClassManagement";
 import { StudentTable } from "@/components/Students/StudentTable";
@@ -36,10 +35,10 @@ const Admin = () => {
           </p>
         </div>
 
-        {/* Dropdown untuk mobile/screen kecil */}
-        <div className="block md:hidden">
+        {/* Dropdown menu selalu tampil di semua ukuran layar */}
+        <div>
           <Select value={tab} onValueChange={setTab}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full max-w-xs">
               <SelectValue placeholder="Pilih menu" />
             </SelectTrigger>
             <SelectContent>
@@ -52,43 +51,18 @@ const Admin = () => {
           </Select>
         </div>
 
-        {/* Tablist tetap tampil di layar besar */}
-        <div className="hidden md:block">
-          <Tabs value={tab} onValueChange={setTab} defaultValue="users" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
-              {MENU_ITEMS.map((item) => (
-                <TabsTrigger key={item.value} value={item.value}>{item.label}</TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-        </div>
-
-        {/* Tab content, selalu render konten sesuai tab */}
+        {/* Konten sesuai pilihan */}
         <div>
-          {tab === "users" && (
-            <UserManagement />
-          )}
-          {tab === "students" && (
-            <StudentTable />
-          )}
-          {tab === "classes" && (
-            <ClassManagement />
-          )}
-          {tab === "behavior" && (
-            <BehaviorManagement />
-          )}
-          {tab === "consultation" && (
-            <ConsultationManagement />
-          )}
+          {tab === "users" && <UserManagement />}
+          {tab === "students" && <StudentTable />}
+          {tab === "classes" && <ClassManagement />}
+          {tab === "behavior" && <BehaviorManagement />}
+          {tab === "consultation" && <ConsultationManagement />}
           {tab === "psychology" && (
             <TestManagement onBack={() => {}} onTestsUpdated={() => {}} />
           )}
-          {tab === "letters" && (
-            <LetterManagement />
-          )}
-          {tab === "whatsapp" && (
-            <MultiWhatsAppSender />
-          )}
+          {tab === "letters" && <LetterManagement />}
+          {tab === "whatsapp" && <MultiWhatsAppSender />}
         </div>
       </div>
     </Layout>
@@ -96,4 +70,3 @@ const Admin = () => {
 };
 
 export default Admin;
-
