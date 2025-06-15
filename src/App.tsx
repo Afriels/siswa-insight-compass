@@ -1,4 +1,3 @@
-
 import {
   Routes,
   Route,
@@ -10,6 +9,7 @@ import Students from "./pages/Students";
 import { ProtectedRoute } from "./components/Auth/ProtectedRoute";
 import { AuthProvider } from "./providers/AuthProvider";
 import Landing from "./pages/Landing";
+import Index from "./pages/Index";
 
 function App() {
   return (
@@ -17,6 +17,14 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/auth" element={<Auth />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Index />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/admin"
           element={
@@ -40,4 +48,3 @@ function App() {
 }
 
 export default App;
-
