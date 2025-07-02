@@ -215,18 +215,18 @@ export const FeatureGuide = () => {
         </DialogHeader>
 
         <Tabs value={selectedFeature} onValueChange={setSelectedFeature} className="w-full mt-8">
-          <TabsList className="grid grid-cols-3 lg:grid-cols-5 mb-8 bg-card rounded-2xl p-3 shadow-xl border border-primary/20">
+          <TabsList className="grid grid-cols-3 lg:grid-cols-5 mb-8 bg-card rounded-2xl p-3 shadow-xl border border-primary/20 h-auto">
             {Object.entries(featureGuides).map(([key, feature]) => (
               <TabsTrigger 
                 key={key} 
                 value={key} 
-                className="text-xs transition-all duration-300 hover:bg-primary/10 data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-primary-foreground rounded-xl shadow-sm"
+                className="text-xs transition-all duration-300 hover:bg-primary/10 data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-primary-foreground rounded-xl shadow-sm h-auto p-2"
               >
-                <div className="flex flex-col items-center gap-2 p-3">
-                  <div className={`p-2 rounded-xl ${feature.color} text-white shadow-lg transition-transform duration-200 group-hover:scale-110`}>
+                <div className="flex flex-col items-center gap-1 min-h-[60px]">
+                  <div className={`p-1.5 rounded-lg ${feature.color} text-white shadow-lg transition-transform duration-200 group-hover:scale-110`}>
                     {feature.icon}
                   </div>
-                  <span className="hidden sm:inline font-medium">{feature.title}</span>
+                  <span className="text-[10px] sm:text-xs font-medium text-center leading-tight">{feature.title}</span>
                 </div>
               </TabsTrigger>
             ))}

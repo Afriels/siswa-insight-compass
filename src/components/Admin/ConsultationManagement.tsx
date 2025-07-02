@@ -8,9 +8,10 @@ import {
 import { 
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow 
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Eye, MessageSquare, CheckCircle, XCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
 type Consultation = {
@@ -64,6 +65,34 @@ const ConsultationManagement = () => {
     fetchConsultations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleUpdateStatus = async (consultationId: string, newStatus: 'pending' | 'ongoing' | 'resolved') => {
+    try {
+      const { error } = await supabase
+        .from('consultations')
+        .update({ 
+          status: newStatus,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', consultationId);
+        
+      if (error) throw error;
+      
+      toast({
+        title: "Berhasil",
+        description: "Status konsultasi berhasil diperbarui",
+      });
+      
+      fetchConsultations();
+    } catch (error: any) {
+      console.error("Error updating consultation status:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Gagal memperbarui status konsultasi",
+        variant: "destructive",
+      });
+    }
+  };
   
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -106,6 +135,7 @@ const ConsultationManagement = () => {
                   <TableHead>Status</TableHead>
                   <TableHead>Tanggal Dibuat</TableHead>
                   <TableHead>Terakhir Diperbarui</TableHead>
+                  <TableHead className="text-right">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -126,6 +156,52 @@ const ConsultationManagement = () => {
                     </TableCell>
                     <TableCell>
                       {format(new Date(consultation.updated_at), 'dd/MM/yyyy HH:mm')}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          asChild
+                        >
+                          <Link to={`/consultation/${consultation.id}`}>
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                        
+                        {consultation.status === 'pending' && (
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleUpdateStatus(consultation.id, 'ongoing')}
+                            className="text-blue-600 hover:bg-blue-50"
+                          >
+                            <MessageSquare className="h-4 w-4" />
+                          </Button>
+                        )}
+                        
+                        {consultation.status === 'ongoing' && (
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleUpdateStatus(consultation.id, 'resolved')}
+                            className="text-green-600 hover:bg-green-50"
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                          </Button>
+                        )}
+                        
+                        {consultation.status === 'resolved' && (
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleUpdateStatus(consultation.id, 'pending')}
+                            className="text-orange-600 hover:bg-orange-50"
+                          >
+                            <XCircle className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

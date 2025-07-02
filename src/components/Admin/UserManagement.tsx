@@ -159,20 +159,30 @@ const UserManagement = () => {
 
   const handleUpdateRole = async (userId: string, newRole: string) => {
     try {
+      console.log("Updating role for user:", userId, "to role:", newRole);
+      
       const { error } = await supabase
         .from('profiles')
         .update({ role: newRole })
         .eq('id', userId);
-      if (error) throw error;
+        
+      if (error) {
+        console.error("Role update error:", error);
+        throw error;
+      }
+      
       toast({
         title: "Berhasil",
         description: "Peran pengguna berhasil diperbarui",
       });
-      fetchUsers();
+      
+      // Refresh users list
+      await fetchUsers();
     } catch (error: any) {
+      console.error("Failed to update role:", error);
       toast({
         title: "Error",
-        description: "Gagal memperbarui peran pengguna",
+        description: error.message || "Gagal memperbarui peran pengguna",
         variant: "destructive",
       });
     }
