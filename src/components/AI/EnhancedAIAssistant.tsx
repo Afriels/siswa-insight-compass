@@ -87,7 +87,7 @@ export const EnhancedAIAssistant = () => {
 
     try {
       // Call enhanced AI function
-      const response = await fetch('/api/enhanced-ai-chat', {
+      const response = await fetch('/functions/v1/enhanced-ai-chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

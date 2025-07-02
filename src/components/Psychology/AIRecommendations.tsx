@@ -61,7 +61,7 @@ Berikan:
 Gunakan bahasa yang supportif dan mudah dipahami siswa SMA. Fokus pada aspek positif dan growth mindset.`;
       }
 
-      const response = await fetch('/api/enhanced-ai-chat', {
+      const response = await fetch('/functions/v1/enhanced-ai-chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
