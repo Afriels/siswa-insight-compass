@@ -8,6 +8,7 @@ import ConsultationManagement from "@/components/Admin/ConsultationManagement";
 import LetterManagement from "@/components/Admin/LetterManagement";
 import { TestManagement } from "@/components/Psychology/TestManagement";
 import { MultiWhatsAppSender } from "@/components/WhatsApp/MultiWhatsAppSender";
+import { AdminManualControls } from "@/components/Admin/AdminManualControls";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 
@@ -20,6 +21,7 @@ const MENU_ITEMS = [
   { value: "psychology", label: "Tes Psikologi" },
   { value: "letters", label: "Surat" },
   { value: "whatsapp", label: "WhatsApp" },
+  { value: "controls", label: "Kontrol Manual" },
 ];
 
 const Admin = () => {
@@ -63,6 +65,7 @@ const Admin = () => {
           )}
           {tab === "letters" && <LetterManagement />}
           {tab === "whatsapp" && <MultiWhatsAppSender />}
+          {tab === "controls" && <AdminManualControls />}
         </div>
       </div>
     </Layout>

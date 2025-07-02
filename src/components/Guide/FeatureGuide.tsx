@@ -199,31 +199,31 @@ export const FeatureGuide = () => {
         </Button>
       </DialogTrigger>
       <DialogContent
-        className="max-w-6xl max-h-[85vh] overflow-y-auto animate-slideInUp bg-gradient-to-br from-blue-50 via-violet-100 to-indigo-50 dark:from-[#15041f] dark:via-[#23324a] dark:to-[#332553] backdrop-blur-2xl shadow-2xl border-0 z-[100]"
-        style={{ boxShadow: '0 12px 48px 0 #4235bf33' }}
+        className="max-w-6xl max-h-[85vh] overflow-y-auto animate-slideInUp bg-gradient-to-br from-primary/5 via-secondary/10 to-accent/5 backdrop-blur-2xl shadow-2xl border-2 border-primary/20 z-[100]"
+        style={{ borderRadius: '24px' }}
       >
-        <DialogHeader className="border-b pb-4">
-          <DialogTitle className="flex items-center gap-3 text-2xl font-bold bg-gradient-to-r from-counseling-blue to-indigo-600 bg-clip-text text-transparent">
-            <div className="p-2 rounded-lg bg-counseling-blue text-white">
-              <BookOpen className="h-6 w-6" />
+        <DialogHeader className="border-b border-primary/20 pb-6 bg-gradient-to-r from-primary/10 to-secondary/10 -m-6 mb-6 p-6 rounded-t-3xl">
+          <DialogTitle className="flex items-center gap-3 text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-lg">
+              <BookOpen className="h-8 w-8" />
             </div>
             Panduan Fitur BK Connect
           </DialogTitle>
-          <DialogDescription className="text-lg text-gray-600">
+          <DialogDescription className="text-lg text-foreground/80 mt-2">
             Pelajari cara menggunakan setiap fitur dalam aplikasi BK Connect dengan mudah dan efektif
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs value={selectedFeature} onValueChange={setSelectedFeature} className="w-full mt-6">
-          <TabsList className="grid grid-cols-3 lg:grid-cols-5 mb-8 bg-white rounded-xl p-2 shadow-lg">
+        <Tabs value={selectedFeature} onValueChange={setSelectedFeature} className="w-full mt-8">
+          <TabsList className="grid grid-cols-3 lg:grid-cols-5 mb-8 bg-card rounded-2xl p-3 shadow-xl border border-primary/20">
             {Object.entries(featureGuides).map(([key, feature]) => (
               <TabsTrigger 
                 key={key} 
                 value={key} 
-                className="text-xs transition-all duration-300 hover:bg-blue-50 data-[state=active]:bg-counseling-blue data-[state=active]:text-white rounded-lg"
+                className="text-xs transition-all duration-300 hover:bg-primary/10 data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-primary-foreground rounded-xl shadow-sm"
               >
-                <div className="flex flex-col items-center gap-2 p-2">
-                  <div className={`p-2 rounded-lg ${feature.color} text-white`}>
+                <div className="flex flex-col items-center gap-2 p-3">
+                  <div className={`p-2 rounded-xl ${feature.color} text-white shadow-lg transition-transform duration-200 group-hover:scale-110`}>
                     {feature.icon}
                   </div>
                   <span className="hidden sm:inline font-medium">{feature.title}</span>
@@ -234,47 +234,47 @@ export const FeatureGuide = () => {
 
           {Object.entries(featureGuides).map(([key, feature]) => (
             <TabsContent key={key} value={key} className="space-y-6 animate-fadeIn">
-              <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-                <CardHeader className="bg-gradient-to-r from-counseling-blue to-indigo-600 text-white rounded-t-lg">
-                  <CardTitle className="flex items-center gap-3 text-xl">
-                    <div className="p-2 rounded-lg bg-white/20">
+              <Card className="shadow-2xl border-2 border-primary/20 bg-card/90 backdrop-blur-sm rounded-3xl overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-primary via-secondary to-accent text-primary-foreground rounded-t-3xl p-8">
+                  <CardTitle className="flex items-center gap-4 text-2xl">
+                    <div className="p-3 rounded-2xl bg-primary-foreground/20 backdrop-blur-sm">
                       {feature.icon}
                     </div>
                     {feature.title}
                   </CardTitle>
-                  <CardDescription className="text-blue-100 text-base">
+                  <CardDescription className="text-primary-foreground/90 text-lg mt-2">
                     {feature.description}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="p-6 space-y-6">
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 mb-4">
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                        <h4 className="font-bold text-lg text-gray-800">Langkah-langkah Penggunaan</h4>
+                <CardContent className="p-8 space-y-8">
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-3 mb-6">
+                        <CheckCircle className="h-6 w-6 text-green-500" />
+                        <h4 className="font-bold text-xl text-foreground">Langkah-langkah Penggunaan</h4>
                       </div>
-                      <div className="space-y-3">
+                      <div className="space-y-4">
                         {feature.steps.map((step, index) => (
-                          <div key={index} className="flex gap-4 p-3 rounded-lg bg-blue-50 border-l-4 border-counseling-blue">
-                            <Badge variant="outline" className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-counseling-blue text-white border-counseling-blue">
+                          <div key={index} className="flex gap-4 p-4 rounded-2xl bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/10 hover:border-primary/20 transition-all duration-300">
+                            <Badge variant="outline" className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold bg-gradient-to-br from-primary to-secondary text-primary-foreground border-primary shadow-lg">
                               {index + 1}
                             </Badge>
-                            <span className="text-sm text-gray-700 leading-relaxed">{step}</span>
+                            <span className="text-sm text-foreground/80 leading-relaxed flex-1">{step}</span>
                           </div>
                         ))}
                       </div>
                     </div>
 
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 mb-4">
-                        <Lightbulb className="h-5 w-5 text-yellow-500" />
-                        <h4 className="font-bold text-lg text-gray-800">Tips & Saran</h4>
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-3 mb-6">
+                        <Lightbulb className="h-6 w-6 text-yellow-500" />
+                        <h4 className="font-bold text-xl text-foreground">Tips & Saran</h4>
                       </div>
-                      <div className="space-y-3">
+                      <div className="space-y-4">
                         {feature.tips.map((tip, index) => (
-                          <div key={index} className="flex gap-3 p-3 rounded-lg bg-yellow-50 border-l-4 border-yellow-400">
-                            <span className="text-yellow-500 text-lg">💡</span>
-                            <span className="text-sm text-gray-700 leading-relaxed">{tip}</span>
+                          <div key={index} className="flex gap-4 p-4 rounded-2xl bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 hover:border-yellow-300 transition-all duration-300">
+                            <span className="text-yellow-500 text-xl">💡</span>
+                            <span className="text-sm text-foreground/80 leading-relaxed flex-1">{tip}</span>
                           </div>
                         ))}
                       </div>
@@ -286,9 +286,9 @@ export const FeatureGuide = () => {
           ))}
         </Tabs>
 
-        <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
-          <p className="text-sm text-center text-gray-600">
-            <strong>💬 Butuh bantuan lebih lanjut?</strong> Hubungi administrator sistem atau gunakan fitur konsultasi online.
+        <div className="mt-8 p-6 bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl border-2 border-green-200/50 shadow-lg">
+          <p className="text-sm text-center text-foreground/70">
+            <strong className="text-primary">💬 Butuh bantuan lebih lanjut?</strong> Hubungi administrator sistem atau gunakan fitur konsultasi online.
           </p>
         </div>
       </DialogContent>
