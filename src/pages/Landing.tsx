@@ -1,28 +1,27 @@
 import { Link } from "react-router-dom";
 import { Lightbulb, Users, MessageCircle, Calendar, HelpCircle, CheckCircle, BookOpen, ShieldCheck } from "lucide-react";
 import NavbarLanding from "@/components/Landing/NavbarLanding";
-
-const heroImage =
-  "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?fit=crop&w=700&q=80";
+import heroImage from "@/assets/counseling-hero.jpg";
+import consultationImage from "@/assets/consultation-scene.jpg";
 
 const fitur = [
   {
-    icon: <MessageCircle className="h-8 w-8 text-counseling-blue" />,
+    icon: <MessageCircle className="h-8 w-8 text-primary" />,
     title: "Konsultasi Online",
     desc: "Siswa dapat berkonsultasi langsung dengan Guru BK melalui platform digital ini secara aman dan nyaman.",
   },
   {
-    icon: <Calendar className="h-8 w-8 text-counseling-green" />,
+    icon: <Calendar className="h-8 w-8 text-accent" />,
     title: "Manajemen Jadwal",
     desc: "Atur jadwal konsultasi & lihat agenda dengan mudah demi terlaksananya layanan tepat waktu.",
   },
   {
-    icon: <Users className="h-8 w-8 text-counseling-purple" />,
+    icon: <Users className="h-8 w-8 text-secondary" />,
     title: "Kolaborasi Orang Tua",
     desc: "Orang tua siswa dapat mendukung dan memantau perkembangan anak secara langsung.",
   },
   {
-    icon: <Lightbulb className="h-8 w-8 text-yellow-400" />,
+    icon: <Lightbulb className="h-8 w-8 text-yellow-500" />,
     title: "Tips Pengembangan Diri",
     desc: "Akses informasi menarik seperti artikel pengembangan diri, motivasi dan edukasi masalah remaja.",
   },
@@ -40,17 +39,17 @@ const fitur = [
 
 const steps = [
   {
-    icon: <CheckCircle className="h-8 w-8 text-counseling-blue" />,
+    icon: <CheckCircle className="h-8 w-8 text-primary" />,
     title: "Login",
     desc: "Siswa/orang tua login menggunakan email yang terdaftar.",
   },
   {
-    icon: <BookOpen className="h-8 w-8 text-counseling-green" />,
+    icon: <BookOpen className="h-8 w-8 text-accent" />,
     title: "Pilih Konsultasi",
     desc: "Pilih menu konsultasi untuk membuat atau mengatur janji temu.",
   },
   {
-    icon: <MessageCircle className="h-8 w-8 text-counseling-purple" />,
+    icon: <MessageCircle className="h-8 w-8 text-secondary" />,
     title: "Berkonsultasi",
     desc: "Sampaikan keluhan/pertanyaan di ruang yang aman bersama Guru BK.",
   },
@@ -58,14 +57,14 @@ const steps = [
 
 const teamBK = [
   {
-    name: "Bu Sarah, S.Pd",
-    role: "Guru BK",
-    img: "https://randomuser.me/api/portraits/women/65.jpg",
+    name: "Mr. Ropin Juwaeni Sholeh",
+    role: "Guru BK Senior",
+    img: "https://randomuser.me/api/portraits/men/78.jpg",
   },
   {
-    name: "Pak Ahmad, M.Pd",
+    name: "Ms. Rizka Choirotinusman",
     role: "Guru BK",
-    img: "https://randomuser.me/api/portraits/men/43.jpg",
+    img: "https://randomuser.me/api/portraits/women/84.jpg",
   },
 ];
 
@@ -90,107 +89,168 @@ const faqs = [
 
 export default function Landing() {
   return (
-    <main className="relative min-h-screen bg-gradient-to-b from-counseling-blue/80 to-counseling-lightGreen/80 flex flex-col">
+    <main className="relative min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10 flex flex-col">
       {/* Navbar Landing */}
       <NavbarLanding />
+      
       {/* Hero Section */}
-      <header className="container mx-auto py-6 flex flex-col md:flex-row items-center md:justify-between animate-fade-in mt-16">
-        <div>
-          <h1 className="font-bold text-3xl md:text-5xl text-counseling-blue drop-shadow-lg">
-            SMA Negeri 1 Lumbang
+      <header className="container mx-auto py-8 flex flex-col lg:flex-row items-center lg:justify-between animate-fadeInSoft mt-16 gap-8">
+        <div className="flex-1 animate-slideInLeft">
+          <div className="inline-block px-4 py-2 bg-primary/10 rounded-full mb-4 animate-fadeIn">
+            <span className="text-sm font-medium text-primary">✨ Platform BK Modern</span>
+          </div>
+          <h1 className="font-bold text-4xl md:text-6xl text-primary drop-shadow-lg leading-tight">
+            Dengan BK, Semua <br/>
+            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              Jadi Lebih Baik
+            </span>
           </h1>
-          <p className="mt-2 text-lg text-counseling-dark max-w-xl">
-            Lebih dekat, lebih solutif, lebih baik bersama BK. <br />
-            Hadirkan solusi permasalahan siswa — online & interaktif.
+          <p className="mt-4 text-lg text-muted-foreground max-w-2xl leading-relaxed">
+            Bimbingan Konseling SMA Negeri 1 Lumbang, tempat kamu bisa menceritakan masalahmu 
+            dengan aman, tenang dan terjaga privasi.
           </p>
-          <Link
-            to="/auth"
-            className="mt-5 inline-block bg-counseling-green text-white font-semibold px-8 py-3 rounded-lg shadow hover:bg-green-700 text-lg transition"
-          >
-            Mulai Konsultasi
-          </Link>
+          <div className="mt-8 flex flex-col sm:flex-row gap-4">
+            <Link
+              to="/auth"
+              className="group bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 inline-flex items-center justify-center"
+            >
+              Mulai Konsultasi
+              <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+            </Link>
+            <Link
+              to="/forum"
+              className="group border-2 border-primary/20 hover:border-primary text-primary font-medium px-8 py-4 rounded-xl transition-all duration-300 hover:bg-primary/5 inline-flex items-center justify-center"
+            >
+              Jelajahi Forum
+            </Link>
+          </div>
         </div>
-        <div className="flex-1 flex justify-center md:flex-row mt-8 md:mt-0">
-          <img
-            src={heroImage}
-            alt="BK Connect Hero"
-            className="rounded-3xl shadow-2xl border-4 border-counseling-blue max-w-xs md:max-w-lg"
-          />
+        
+        <div className="flex-1 flex justify-center animate-slideInRight">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 rounded-3xl blur-3xl animate-pulse"></div>
+            <img
+              src={heroImage}
+              alt="BK Connect - Konseling Modern"
+              className="relative rounded-3xl shadow-2xl border border-primary/20 max-w-sm md:max-w-lg hover:scale-105 transition-transform duration-500"
+            />
+          </div>
         </div>
       </header>
+
       {/* Fitur Section */}
-      <section className="w-full bg-white/80 py-12">
+      <section className="w-full bg-card/50 backdrop-blur-sm py-16">
         <div className="container mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold text-counseling-blue text-center mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-primary text-center mb-12 animate-slideInUp">
             Fitur Unggulan BK Online
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {fitur.map((f, i) => (
-              <div key={i} className="p-6 bg-white rounded-xl shadow-md flex flex-col items-center text-center hover:scale-105 transition animate-fade-in">
-                <div className="mb-3">{f.icon}</div>
-                <div className="font-semibold text-counseling-blue text-lg">{f.title}</div>
-                <div className="text-gray-600 text-sm mt-2">{f.desc}</div>
+              <div 
+                key={i} 
+                className="group p-8 bg-card rounded-2xl shadow-lg hover:shadow-xl border border-border/50 hover:border-primary/20 transition-all duration-300 hover:-translate-y-2 animate-slideInUp"
+                style={{ animationDelay: `${i * 100}ms` }}
+              >
+                <div className="mb-4 group-hover:scale-110 transition-transform duration-300">{f.icon}</div>
+                <h3 className="font-semibold text-primary text-xl mb-3">{f.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{f.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
-      {/* Tata Cara Konsultasi */}
-      <section className="container mx-auto py-12">
-        <h2 className="text-2xl md:text-3xl font-bold text-counseling-blue text-center mb-8">
-          Cara Konsultasi di BK Online
-        </h2>
-        <div className="flex flex-col md:flex-row justify-center gap-8">
-          {steps.map((step, i) => (
-            <div key={i} className="flex flex-col items-center text-center max-w-xs mx-auto animate-fade-in">
-              <div className="mb-2">{step.icon}</div>
-              <div className="font-semibold">{step.title}</div>
-              <div className="text-gray-500 text-sm">{step.desc}</div>
+
+      {/* Consultation Process */}
+      <section className="container mx-auto py-16">
+        <div className="flex flex-col lg:flex-row items-center gap-12">
+          <div className="flex-1 animate-slideInLeft">
+            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-8">
+              Cara Konsultasi di BK Online
+            </h2>
+            <div className="space-y-8">
+              {steps.map((step, i) => (
+                <div key={i} className="flex items-start gap-4 animate-slideInLeft" style={{ animationDelay: `${i * 150}ms` }}>
+                  <div className="flex-shrink-0 p-3 bg-primary/10 rounded-full">
+                    {step.icon}
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-lg text-foreground mb-2">{step.title}</h4>
+                    <p className="text-muted-foreground">{step.desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+          <div className="flex-1 animate-slideInRight">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-primary/20 rounded-3xl blur-2xl"></div>
+              <img
+                src={consultationImage}
+                alt="Konsultasi BK"
+                className="relative rounded-3xl shadow-2xl border border-primary/20"
+              />
+            </div>
+          </div>
         </div>
       </section>
+
       {/* Tim BK */}
-      <section className="w-full bg-white/80 py-12 border-y">
+      <section className="w-full bg-card/50 backdrop-blur-sm py-16">
         <div className="container mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold text-counseling-blue text-center mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-primary text-center mb-12 animate-slideInUp">
             Tim Guru BK
           </h2>
           <div className="flex flex-wrap justify-center gap-8">
             {teamBK.map((person, i) => (
-              <div key={person.name} className="flex flex-col items-center bg-white rounded-xl p-6 shadow-lg w-60 animate-fade-in">
-                <img
-                  src={person.img}
-                  alt={person.name}
-                  className="h-24 w-24 rounded-full object-cover mb-3 border-4 border-counseling-blue"
-                />
-                <div className="font-bold text-counseling-blue">{person.name}</div>
-                <div className="text-gray-500 text-sm">{person.role}</div>
+              <div 
+                key={person.name} 
+                className="group bg-card rounded-2xl p-8 shadow-lg hover:shadow-xl w-80 transition-all duration-300 hover:-translate-y-2 animate-slideInUp border border-border/50 hover:border-primary/20"
+                style={{ animationDelay: `${i * 200}ms` }}
+              >
+                <div className="flex flex-col items-center text-center">
+                  <div className="relative mb-6">
+                    <div className="absolute inset-0 bg-primary/20 rounded-full blur-lg"></div>
+                    <img
+                      src={person.img}
+                      alt={person.name}
+                      className="relative h-32 w-32 rounded-full object-cover border-4 border-primary/20 group-hover:border-primary/40 transition-colors"
+                    />
+                  </div>
+                  <h3 className="font-bold text-primary text-xl mb-2">{person.name}</h3>
+                  <p className="text-muted-foreground">{person.role}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
+
       {/* FAQ */}
-      <section className="container mx-auto py-12">
-        <h2 className="text-2xl md:text-3xl font-bold text-counseling-blue text-center mb-8">FAQ BK Online</h2>
-        <div className="max-w-2xl mx-auto space-y-4">
+      <section className="container mx-auto py-16">
+        <h2 className="text-3xl md:text-4xl font-bold text-primary text-center mb-12 animate-slideInUp">
+          FAQ BK Online
+        </h2>
+        <div className="max-w-3xl mx-auto space-y-4">
           {faqs.map((faq, i) => (
             <details
               key={faq.q}
-              className="bg-white px-5 py-4 rounded-lg shadow hover:bg-blue-50 transition animate-fade-in group"
+              className="group bg-card px-6 py-5 rounded-xl shadow-md hover:shadow-lg border border-border/50 hover:border-primary/20 transition-all animate-slideInUp"
+              style={{ animationDelay: `${i * 100}ms` }}
             >
-              <summary className="cursor-pointer font-semibold flex items-center gap-2 text-counseling-blue focus:outline-none group-open:text-green-700 transition">
-                <HelpCircle className="h-5 w-5" />
-                {faq.q}
+              <summary className="cursor-pointer font-semibold flex items-center gap-3 text-primary focus:outline-none group-open:text-accent transition-colors">
+                <HelpCircle className="h-5 w-5 flex-shrink-0" />
+                <span>{faq.q}</span>
               </summary>
-              <div className="mt-2 text-gray-600 text-sm">{faq.a}</div>
+              <div className="mt-4 text-muted-foreground leading-relaxed pl-8">{faq.a}</div>
             </details>
           ))}
         </div>
       </section>
-      <footer className="mt-auto bg-counseling-blue text-white py-3 text-center text-xs rounded-t-2xl">
-        © {new Date().getFullYear()} BK Connect - SMA Negeri 1 Lumbang. All Rights Reserved.
+
+      <footer className="mt-auto bg-primary text-primary-foreground py-6 text-center rounded-t-2xl">
+        <p className="text-sm opacity-90">
+          © {new Date().getFullYear()} BK Connect - SMA Negeri 1 Lumbang. All Rights Reserved.
+        </p>
       </footer>
     </main>
   );

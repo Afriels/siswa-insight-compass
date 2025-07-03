@@ -46,7 +46,6 @@ export const ClassForm = ({ isOpen, onClose, onSuccess, initialData, mode }: Cla
     setLoading(true);
     
     try {
-      // For now, just show success message since this is manual management
       toast({
         title: "Berhasil",
         description: `Kelas ${formData.name} berhasil ${mode === 'create' ? 'ditambahkan' : 'diperbarui'}`,
@@ -55,7 +54,6 @@ export const ClassForm = ({ isOpen, onClose, onSuccess, initialData, mode }: Cla
       onSuccess();
       onClose();
       
-      // Reset form
       setFormData({
         name: '',
         grade: 'X',
@@ -64,7 +62,7 @@ export const ClassForm = ({ isOpen, onClose, onSuccess, initialData, mode }: Cla
     } catch (error: any) {
       console.error("Error saving class:", error);
       toast({
-        title: "Error",
+        title: "Error", 
         description: error.message || "Gagal menyimpan data kelas",
         variant: "destructive",
       });
