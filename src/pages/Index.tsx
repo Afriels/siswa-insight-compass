@@ -9,9 +9,10 @@ import { Users, Calendar, MessageSquare, TrendingUp, BookOpen, Clock } from "luc
 import { useAuth } from "@/providers/AuthProvider";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Index = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [userProfile, setUserProfile] = useState<{ role: string } | null>(null);
 

@@ -73,6 +73,7 @@ export const AdminManualControls = () => {
               checked={adminSettings.userManagement}
               onCheckedChange={(checked) => handleSettingChange('userManagement', checked)}
               disabled={!isSuperAdmin}
+              title="Toggle akses manajemen user"
             />
           </div>
 
@@ -88,6 +89,7 @@ export const AdminManualControls = () => {
               checked={adminSettings.fullDatabaseAccess}
               onCheckedChange={(checked) => handleSettingChange('fullDatabaseAccess', checked)}
               disabled={!isSuperAdmin}
+              title="Toggle akses database penuh"
             />
           </div>
 
@@ -103,6 +105,7 @@ export const AdminManualControls = () => {
               checked={adminSettings.systemConfiguration}
               onCheckedChange={(checked) => handleSettingChange('systemConfiguration', checked)}
               disabled={!isSuperAdmin}
+              title="Toggle konfigurasi sistem"
             />
           </div>
 
@@ -118,6 +121,7 @@ export const AdminManualControls = () => {
               checked={adminSettings.advancedFeatures}
               onCheckedChange={(checked) => handleSettingChange('advancedFeatures', checked)}
               disabled={!isSuperAdmin}
+              title="Toggle fitur lanjutan"
             />
           </div>
 
@@ -133,6 +137,7 @@ export const AdminManualControls = () => {
               checked={adminSettings.superAdminMode}
               onCheckedChange={(checked) => handleSettingChange('superAdminMode', checked)}
               disabled={!isSuperAdmin}
+              title="Toggle mode super admin"
             />
           </div>
         </div>

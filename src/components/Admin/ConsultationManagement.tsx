@@ -163,8 +163,9 @@ const ConsultationManagement = () => {
                           variant="outline" 
                           size="sm"
                           asChild
+                          title="Lihat detail konsultasi"
                         >
-                          <Link to={`/consultation/${consultation.id}`}>
+                          <Link to={`/dashboard/consultation-detail/${consultation.id}`}>
                             <Eye className="h-4 w-4" />
                           </Link>
                         </Button>
@@ -175,6 +176,7 @@ const ConsultationManagement = () => {
                             size="sm"
                             onClick={() => handleUpdateStatus(consultation.id, 'ongoing')}
                             className="text-blue-600 hover:bg-blue-50"
+                            title="Mulai konsultasi"
                           >
                             <MessageSquare className="h-4 w-4" />
                           </Button>
@@ -186,6 +188,7 @@ const ConsultationManagement = () => {
                             size="sm"
                             onClick={() => handleUpdateStatus(consultation.id, 'resolved')}
                             className="text-green-600 hover:bg-green-50"
+                            title="Selesaikan konsultasi"
                           >
                             <CheckCircle className="h-4 w-4" />
                           </Button>
@@ -197,6 +200,7 @@ const ConsultationManagement = () => {
                             size="sm"
                             onClick={() => handleUpdateStatus(consultation.id, 'pending')}
                             className="text-orange-600 hover:bg-orange-50"
+                            title="Buka kembali konsultasi"
                           >
                             <XCircle className="h-4 w-4" />
                           </Button>

@@ -96,20 +96,25 @@ export const Layout = ({ children }) => {
           </SidebarHeader>
           <SidebarContent className="pt-1">
             <SidebarGroup>
-              <SidebarGroupLabel>Menu</SidebarGroupLabel>
+              <SidebarGroupLabel className="text-primary font-semibold">Menu Utama</SidebarGroupLabel>
               <SidebarGroupContent>
-                <SidebarMenu>
+                <SidebarMenu className="space-y-1">
                   {navigationItems().map((item) => {
                     const isCurrent = location.pathname === item.to || (item.to !== "/" && location.pathname.startsWith(item.to));
                     return (
                       <SidebarMenuItem key={item.to}>
                         <SidebarMenuButton
                           isActive={isCurrent}
-                          className="hover:scale-105 transition bg-gradient-to-l from-blue-50 dark:from-indigo-900 to-white/70 dark:to-transparent"
+                          className={`hover:scale-105 transition-all duration-200 rounded-lg ${
+                            isCurrent 
+                              ? "bg-primary text-primary-foreground shadow-md" 
+                              : "hover:bg-primary/10"
+                          }`}
                           onClick={() => onMenuClick(item.to)}
+                          title={`Navigasi ke ${item.label}`}
                         >
-                          <item.icon size={18} className={`mr-1 ${isCurrent ? "text-blue-700 dark:text-violet-300" : "text-gray-500 dark:text-gray-200"}`} />
-                          <span>{item.label}</span>
+                          <item.icon size={18} className="mr-2" />
+                          <span className="font-medium">{item.label}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     );
@@ -128,8 +133,8 @@ export const Layout = ({ children }) => {
               <ThemeToggle />
               <button
                 onClick={async () => { await signOut(); navigate("/auth"); }}
-                className="ml-1 text-gray-400 hover:text-red-500 transition"
-                title="Keluar"
+                className="ml-1 text-gray-400 hover:text-red-500 transition-colors duration-200 p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20"
+                title="Keluar dari sistem"
               >
                 <LogOut size={16} />
               </button>

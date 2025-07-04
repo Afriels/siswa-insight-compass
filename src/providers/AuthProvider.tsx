@@ -11,7 +11,7 @@ type AuthContextType = {
   resetInactivityTimer: () => void;
 };
 
-const AUTH_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
+const AUTH_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -26,7 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     if (user) {
       const timer = setTimeout(async () => {
-        console.log("User inactive for 10 minutes, logging out");
+        console.log("User inactive for 30 minutes, logging out");
         await signOut();
       }, AUTH_TIMEOUT);
       

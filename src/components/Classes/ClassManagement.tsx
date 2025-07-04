@@ -157,7 +157,7 @@ const ClassManagement = () => {
             Manajemen Kelas
           </CardTitle>
         </div>
-        <Button onClick={handleAddClass}>
+        <Button onClick={handleAddClass} title="Tambah kelas baru">
           <Plus className="h-4 w-4 mr-2" />
           Tambah Kelas
         </Button>
@@ -212,6 +212,7 @@ const ClassManagement = () => {
                           variant="outline" 
                           size="sm" 
                           onClick={() => handleEditClass(classData)}
+                          title={`Edit kelas ${classData.name}`}
                         >
                           <PenLine className="h-4 w-4" />
                         </Button>
@@ -219,6 +220,7 @@ const ClassManagement = () => {
                           variant="destructive" 
                           size="sm"
                           onClick={() => handleDeleteClass(classData)}
+                          title={`Hapus kelas ${classData.name}`}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
