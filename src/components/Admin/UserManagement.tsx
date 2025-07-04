@@ -117,31 +117,31 @@ const UserManagement = () => {
         });
         return;
       }
+      
       setCreating(true);
-      const user = await createSupabaseAdminUser({
-        email: newUser.email,
-        password: newUser.password,
-        full_name: newUser.fullName,
-        role: newUser.role,
-      });
-      console.log("User berhasil dibuat di Auth:", user);
-
-      // Polling untuk pastikan profile sudah masuk di DB
-      const didAppear = await waitForNewUserProfile(newUser.email, 3, 700);
-      if (!didAppear) {
-        toast({
-          title: "User berhasil dibuat Auth, tapi profil belum masuk database",
-          description: "Silakan reload data atau cek kembali. Ada kemungkinan delay pada Supabase trigger.",
-          duration: 9000,
-          variant: "destructive"
+      
+      // Manual user creation - directly insert to profiles table
+      const userId = crypto.randomUUID();
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: userId,
+          username: newUser.email,
+          full_name: newUser.fullName,
+          role: newUser.role
         });
-      } else {
-        toast({
-          title: "User berhasil dibuat",
-          description: "User baru berhasil ditambahkan",
-          duration: 6000,
-        });
+      
+      if (profileError) {
+        console.error("Error creating profile:", profileError);
+        throw new Error("Gagal membuat profil pengguna");
       }
+      
+      toast({
+        title: "User berhasil dibuat",
+        description: "User baru berhasil ditambahkan secara manual",
+        duration: 6000,
+      });
+      
       setIsDialogOpen(false);
       setNewUser({ email: "", password: "", fullName: "", role: "student" });
       fetchUsers();

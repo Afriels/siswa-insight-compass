@@ -1,5 +1,6 @@
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PenLine } from "lucide-react";
@@ -13,10 +14,22 @@ interface EditRoleDialogProps {
 }
 
 export function EditRoleDialog({ userId, userName, currentRole, onRoleChange }: EditRoleDialogProps) {
+  const [open, setOpen] = useState(false);
+  const [selectedRole, setSelectedRole] = useState(currentRole || "student");
+
+  const handleRoleChange = async () => {
+    try {
+      await onRoleChange(userId, selectedRole);
+      setOpen(false);
+    } catch (error) {
+      console.error("Error updating role:", error);
+    }
+  };
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" title="Edit peran pengguna">
           <PenLine className="h-4 w-4" />
           <span className="sr-only">Edit</span>
         </Button>
@@ -31,8 +44,8 @@ export function EditRoleDialog({ userId, userName, currentRole, onRoleChange }: 
         <div className="py-4">
           <Label htmlFor={`role-${userId}`}>Peran</Label>
           <Select
-            defaultValue={currentRole || "student"}
-            onValueChange={(value) => onRoleChange(userId, value)}
+            value={selectedRole}
+            onValueChange={setSelectedRole}
           >
             <SelectTrigger id={`role-${userId}`}>
               <SelectValue placeholder="Pilih peran" />
@@ -44,6 +57,14 @@ export function EditRoleDialog({ userId, userName, currentRole, onRoleChange }: 
             </SelectContent>
           </Select>
         </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            Batal
+          </Button>
+          <Button onClick={handleRoleChange}>
+            Simpan Perubahan
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

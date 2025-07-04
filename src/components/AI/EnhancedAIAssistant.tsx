@@ -86,66 +86,29 @@ export const EnhancedAIAssistant = () => {
     setIsLoading(true);
 
     try {
-      // Call OpenAI directly with enhanced functionality
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY || 'sk-test'}`
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            {
-              role: 'system',
-              content: `Anda adalah Enhanced AI Assistant untuk aplikasi BK Connect, sistem manajemen bimbingan konseling.
-
-KONTEKS PENGGUNA:
-- Role: ${userProfile?.role || 'unknown'}
-- Admin Mode: ${adminMode ? 'Aktif' : 'Tidak Aktif'}
-- Internet Search: ${internetSearch ? 'Tersedia' : 'Tidak Aktif'}
-- Database Access: ${dbAccess ? 'Tersedia' : 'Terbatas'}
-
-KEMAMPUAN ANDA:
-${adminMode ? `
-🔧 **Mode Administrator Aktif**
-- Akses penuh ke semua fitur sistem
-- Dapat membantu dengan konfigurasi dan troubleshooting
-- Akses ke data sensitif dan laporan lengkap
-` : ''}
-
-INSTRUKSI:
-- Berikan respons yang relevan dengan konteks BK (Bimbingan Konseling)
-- Gunakan bahasa Indonesia yang sopan dan profesional
-- Sesuaikan jawaban dengan level akses pengguna
-- Berikan saran praktis dan actionable
-- Jika diminta analisis data, jelaskan bahwa Anda memerlukan akses database yang aktif
-
-Jawab pertanyaan berikut dengan konteks di atas:`
-            },
-            {
-              role: 'user',
-              content: input
-            }
-          ],
-          max_tokens: 1000,
-          temperature: 0.7
-        }),
+      // Call enhanced AI edge function
+      const response = await supabase.functions.invoke('enhanced-ai-chat', {
+        body: {
+          message: input,
+          context: {
+            userRole: userProfile?.role || 'unknown',
+            adminMode,
+            internetSearch,
+            dbAccess
+          }
+        }
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to get AI response');
+      if (response.error) {
+        throw new Error(response.error.message || 'Failed to get AI response');
       }
-
-      const data = await response.json();
       
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: data.choices[0]?.message?.content || 'Maaf, terjadi kesalahan dalam pemrosesan.',
+        content: response.data?.response || 'Maaf, terjadi kesalahan dalam pemrosesan.',
         role: 'assistant',
         timestamp: new Date(),
-        searchResults: internetSearch ? [`Pencarian internet ${adminMode ? 'tersedia' : 'terbatas'}`] : undefined,
-        dbOperations: dbAccess ? [`Akses database ${adminMode ? 'penuh' : 'terbatas'}`] : undefined
+        searchResults: response.data?.searchResults || undefined,
+        dbOperations: response.data?.dbOperations || undefined
       };
 
       setMessages(prev => [...prev, aiResponse]);

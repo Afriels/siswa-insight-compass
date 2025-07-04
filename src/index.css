@@ -48,42 +48,42 @@
   }
 
   .dark {
-    /* Dark theme with raspberry-purple palette */
+    /* Dark theme with cool blue-purple palette */
     transition: background 0.5s, color 0.5s;
-    --background: var(--dark-chocolate-cosmos);
-    --foreground: 42 38% 97%;
-    --card: var(--dark-rosewood);
-    --card-foreground: 42 38% 97%;
-    --popover: var(--dark-rosewood);
-    --popover-foreground: 42 38% 97%;
-    --primary: var(--dark-tyrian-purple);
-    --primary-foreground: 42 38% 97%;
-    --secondary: var(--dark-palatinate);
-    --secondary-foreground: 42 38% 97%;
-    --muted: var(--dark-barossa);
-    --muted-foreground: 60 12% 70%;
-    --accent: var(--dark-palatinate);
-    --accent-foreground: 42 38% 97%;
+    --background: 222 84% 5%; /* Deep navy */
+    --foreground: 210 40% 98%;
+    --card: 222 84% 7%; /* Slightly lighter navy */
+    --card-foreground: 210 40% 98%;
+    --popover: 222 84% 7%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217 91% 60%; /* Cool blue */
+    --primary-foreground: 222 84% 5%;
+    --secondary: 217 32% 17%; /* Dark blue-gray */
+    --secondary-foreground: 210 40% 98%;
+    --muted: 215 28% 12%; /* Muted dark blue */
+    --muted-foreground: 217 9% 61%;
+    --accent: 142 76% 36%; /* Cool teal accent */
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: var(--dark-barossa);
-    --input: var(--dark-barossa);
-    --ring: var(--dark-tyrian-purple);
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
+    --border: 215 28% 12%;
+    --input: 215 28% 12%;
+    --ring: 217 91% 60%;
+    --chart-1: 217 91% 60%;
+    --chart-2: 142 76% 36%;
+    --chart-3: 47 96% 53%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     
     /* Sidebar specific colors for dark theme */
-    --sidebar-background: var(--dark-chocolate-cosmos);
-    --sidebar-foreground: 42 38% 97%;
-    --sidebar-primary: var(--dark-tyrian-purple);
-    --sidebar-primary-foreground: 42 38% 97%;
-    --sidebar-accent: var(--dark-palatinate);
-    --sidebar-accent-foreground: 42 38% 97%;
-    --sidebar-border: var(--dark-barossa);
-    --sidebar-ring: var(--dark-tyrian-purple);
+    --sidebar-background: 222 84% 5%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 222 84% 5%;
+    --sidebar-accent: 142 76% 36%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 215 28% 12%;
+    --sidebar-ring: 217 91% 60%;
   }
 
   .forest {

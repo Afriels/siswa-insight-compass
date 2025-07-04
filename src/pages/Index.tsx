@@ -53,27 +53,27 @@ const Index = () => {
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 animate-slideInUp">
-            <Link to="/consultation" className="animate-slideInLeft" style={{ animationDelay: '100ms' }}>
+            <Link to="/consultation" className="animate-slideInLeft" style={{ animationDelay: '100ms' }} title="Lihat konsultasi saya">
               <StatCard 
                 title="Konsultasi Bulan Ini"
-                value="3"
+                value="0"
                 description="Sesi konsultasi"
                 icon={<MessageSquare className="h-4 w-4" />}
               />
             </Link>
-            <Link to="/schedule" className="animate-slideInLeft" style={{ animationDelay: '200ms' }}>
+            <Link to="/schedule" className="animate-slideInLeft" style={{ animationDelay: '200ms' }} title="Lihat jadwal saya">
               <StatCard 
                 title="Jadwal Mendatang"
-                value="2"
+                value="0"
                 description="Janji temu"
                 icon={<Calendar className="h-4 w-4" />}
               />
             </Link>
-            <Link to="/psychology-test" className="animate-slideInLeft" style={{ animationDelay: '300ms' }}>
+            <Link to="/psychology-test" className="animate-slideInLeft" style={{ animationDelay: '300ms' }} title="Ikuti tes psikologi">
               <StatCard 
-                title="Progres Pembelajaran"
-                value="85%"
-                description="Tingkat kemajuan"
+                title="Tes Tersedia"
+                value="3"
+                description="Tes psikologi"
                 icon={<BookOpen className="h-4 w-4" />}
               />
             </Link>
@@ -86,11 +86,19 @@ const Index = () => {
                 Akses Cepat
               </h3>
               <div className="space-y-3">
-                <Link to="/consultation/new" className="block p-3 bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors">
+                <Link 
+                  to="/consultation/new" 
+                  className="block p-3 bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors"
+                  title="Mulai konsultasi baru dengan guru BK"
+                >
                   <p className="font-medium text-primary">Buat Konsultasi Baru</p>
                   <p className="text-sm text-muted-foreground">Mulai sesi konsultasi dengan guru BK</p>
                 </Link>
-                <Link to="/ai-assistant" className="block p-3 bg-accent/10 hover:bg-accent/20 rounded-lg transition-colors">
+                <Link 
+                  to="/ai-assistant" 
+                  className="block p-3 bg-accent/10 hover:bg-accent/20 rounded-lg transition-colors"
+                  title="Konsultasi dengan asisten AI"
+                >
                   <p className="font-medium text-accent">AI Assistant</p>
                   <p className="text-sm text-muted-foreground">Konsultasi ringan dengan AI</p>
                 </Link>
@@ -103,12 +111,20 @@ const Index = () => {
                 Tips Pengembangan Diri
               </h3>
               <div className="space-y-3">
-                <Link to="/forum" className="block p-3 bg-secondary/10 hover:bg-secondary/20 rounded-lg transition-colors">
+                <Link 
+                  to="/forum" 
+                  className="block p-3 bg-secondary/10 hover:bg-secondary/20 rounded-lg transition-colors"
+                  title="Bergabung dengan forum diskusi"
+                >
                   <p className="font-medium text-secondary">Forum Diskusi</p>
                   <p className="text-sm text-muted-foreground">Bergabung dengan diskusi teman-teman</p>
                 </Link>
-                <Link to="/psychology-test" className="block p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
-                  <p className="font-medium text-green-600">Tes Psikologi</p>
+                <Link 
+                  to="/psychology-test" 
+                  className="block p-3 bg-muted hover:bg-muted/80 rounded-lg transition-colors"
+                  title="Ikuti tes psikologi"
+                >
+                  <p className="font-medium text-foreground">Tes Psikologi</p>
                   <p className="text-sm text-muted-foreground">Ikuti tes untuk mengenal diri lebih baik</p>
                 </Link>
               </div>
@@ -137,7 +153,7 @@ const Index = () => {
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 animate-slideInUp">
-          <Link to="/students" className="animate-slideInLeft" style={{ animationDelay: '100ms' }}>
+          <Link to="/students" className="animate-slideInLeft" style={{ animationDelay: '100ms' }} title="Kelola data siswa">
             <StatCard 
               title="Total Siswa"
               value="0"
@@ -145,7 +161,7 @@ const Index = () => {
               icon={<Users className="h-4 w-4" />}
             />
           </Link>
-          <Link to="/consultation" className="animate-slideInLeft" style={{ animationDelay: '200ms' }}>
+          <Link to="/consultation" className="animate-slideInLeft" style={{ animationDelay: '200ms' }} title="Kelola konsultasi">
             <StatCard 
               title="Konsultasi Hari Ini"
               value="0"
@@ -153,7 +169,7 @@ const Index = () => {
               icon={<MessageSquare className="h-4 w-4" />}
             />
           </Link>
-          <Link to="/schedule" className="animate-slideInLeft" style={{ animationDelay: '300ms' }}>
+          <Link to="/schedule" className="animate-slideInLeft" style={{ animationDelay: '300ms' }} title="Kelola jadwal">
             <StatCard 
               title="Jadwal Mendatang"
               value="0"
@@ -161,10 +177,10 @@ const Index = () => {
               icon={<Calendar className="h-4 w-4" />}
             />
           </Link>
-          <Link to="/admin" className="animate-slideInLeft" style={{ animationDelay: '400ms' }}>
+          <Link to="/admin" className="animate-slideInLeft" style={{ animationDelay: '400ms' }} title="Panel administrasi">
             <StatCard 
-              title="Tingkat Aktivitas"
-              value="100%"
+              title="Panel Admin"
+              value="Ready"
               description="Sistem aktif"
               icon={<TrendingUp className="h-4 w-4" />}
             />

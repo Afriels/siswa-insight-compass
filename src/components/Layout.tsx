@@ -5,6 +5,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import {
   Sidebar,
   SidebarContent,
@@ -75,8 +76,9 @@ export const Layout = ({ children }) => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen w-full flex bg-gradient-to-br from-blue-100 via-white to-violet-100 dark:from-[#10111b] dark:via-[#15041f] dark:to-[#1a2431] transition-colors duration-700">
+    <TooltipProvider>
+      <SidebarProvider>
+        <div className="min-h-screen w-full flex bg-gradient-to-br from-blue-100 via-white to-violet-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 transition-colors duration-700">
         {/* Sidebar */}
         <Sidebar className="shadow-xl border-r border-blue-50 dark:border-[#222030] bg-white/90 dark:bg-[#12041d]/80 backdrop-blur-lg transition-all">
           <SidebarHeader>
@@ -151,8 +153,9 @@ export const Layout = ({ children }) => {
               {children || <Outlet />}
             </div>
           </main>
+          </div>
         </div>
-      </div>
-    </SidebarProvider>
+      </SidebarProvider>
+    </TooltipProvider>
   );
 };
