@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -18,8 +18,20 @@ export const AdminManualControls = () => {
     advancedFeatures: false,
     superAdminMode: false
   });
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
-  const isSuperAdmin = user?.email === 'andikabgs@gmail.com';
+  // Load settings from localStorage on mount
+  useEffect(() => {
+    if (user) {
+      const savedSettings = localStorage.getItem(`admin-settings-${user.id}`);
+      if (savedSettings) {
+        setAdminSettings(JSON.parse(savedSettings));
+      }
+      
+      // Check if user is super admin
+      setIsSuperAdmin(user.email === 'andikabgs@gmail.com');
+    }
+  }, [user]);
 
   const handleSettingChange = (setting: string, value: boolean) => {
     if (!isSuperAdmin) {
@@ -31,13 +43,20 @@ export const AdminManualControls = () => {
       return;
     }
 
-    setAdminSettings(prev => ({
-      ...prev,
+    const newSettings = {
+      ...adminSettings,
       [setting]: value
-    }));
+    };
+    
+    // Save to localStorage
+    if (user) {
+      localStorage.setItem(`admin-settings-${user.id}`, JSON.stringify(newSettings));
+    }
+    
+    setAdminSettings(newSettings);
 
     toast({
-      title: "Pengaturan Diperbarui",
+      title: "Pengaturan Disimpan",
       description: `${setting} telah ${value ? 'diaktifkan' : 'dinonaktifkan'}`,
     });
   };

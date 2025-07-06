@@ -86,16 +86,16 @@ export const EnhancedAIAssistant = () => {
     setIsLoading(true);
 
     try {
-      // Call enhanced AI edge function
+      // Call enhanced AI edge function with correct parameters
       const response = await supabase.functions.invoke('enhanced-ai-chat', {
         body: {
           message: input,
-          context: {
-            userRole: userProfile?.role || 'unknown',
-            adminMode,
-            internetSearch,
-            dbAccess
-          }
+          adminMode,
+          internetSearch,
+          dbAccess,
+          userRole: userProfile?.role || 'unknown',
+          userId: user?.id,
+          aiProvider: 'openai'
         }
       });
       if (response.error) {
